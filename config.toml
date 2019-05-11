@@ -1,4 +1,35 @@
-baseURL = "http://example.org/"
-languageCode = "en-us"
-title = "My New Hugo Site"
+baseURL = "https://agnosiagame.com/"
+languageCode = "en-gb"
+title = "Agnosia devblog"
 theme = "hugo-flex"
+
+[params]
+color = "#000"
+footer = ""
+
+[menu]
+ 
+[[menu.nav]]
+name = "All posts"
+url = "post/"
+weight = 1
+
+# [[menu.nav]]
+# name = "About"
+# url = "about/"
+# weight = 2
+#
+# [[menu.nav]]
+# name = "Tags"
+# url = "tags/"
+# weight = 3
+#
+# [[menu.nav]]
+# name = "Categories"
+# url = "categories/"
+# weight = 4
+#
+# [[menu.nav]]
+# name = "RSS"
+# url = "index.xml"
+# weight = 5
