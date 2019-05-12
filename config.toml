@@ -2,7 +2,7 @@ baseURL = "https://agnosiagame.com/"
 languageCode = "en-gb"
 title = "Agnosia devblog"
 theme = "temple"
-# copyright = "©2019"
+copyright = "<a rel='license' href='http://creativecommons.org/licenses/by-nc/4.0/'>CC BY-NC 4.0</a>."
 
 # Enables Chroma-based syntax highlighting with theme "friendly"
 # See https://xyproto.github.io/splash/docs/ for other theme options
