@@ -1,7 +1,7 @@
 ---
 title: "Agnosia"
 date: 2019-05-12T21:44:01+02:00
-draft: true
+draft: false
 ---
 
 There is nothing here that you recognise. The forms all about you are
