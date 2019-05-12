@@ -1,35 +1,70 @@
 baseURL = "https://agnosiagame.com/"
 languageCode = "en-gb"
 title = "Agnosia devblog"
-theme = "hugo-flex"
+theme = "temple"
+# copyright = "©2019"
+
+# Enables Chroma-based syntax highlighting with theme "friendly"
+# See https://xyproto.github.io/splash/docs/ for other theme options
+pygmentsStyle = "friendly"
+
+# If true, Chroma will highlight GitHub-style code fences in addition to
+# highlight shortcodes
+pygmentsCodeFences = true
+
 
 [params]
-color = "#000"
-footer = ""
+# Enables the topmenu, which pulls from categories
+topmenu = "categories"
 
-[menu]
- 
-[[menu.nav]]
-name = "All posts"
-url = "post/"
-weight = 1
+# Enables custom date format (optional, the default is MM-DD-YYYY)
+# For reference to date and time templating, see:
+# https://gohugo.io/functions/format/#hugo-date-and-time-templating-reference
+dateformatpretty = "2006-01-02"
 
-# [[menu.nav]]
-# name = "About"
-# url = "about/"
-# weight = 2
+# Enable table of contents, this can be overridden by page level parameter `toc`.
+toc = true
+
+
+[taxonomies]
+# Builds a list page for each category given
+posts = "posts"
+tag = "tags"
+category = "categories"
+
+
+[author]
+name = "Andy Durdin"
+#github = "adurdin"
+email = "me@andy.durdin.net"
+twitter = "@adurdin"
+#medium = "mediumUsername"
+
+
+#[menu]
+# 
+#[[menu.nav]]
+#name = "All posts"
+#url = "post/"
+#weight = 1
 #
-# [[menu.nav]]
-# name = "Tags"
-# url = "tags/"
-# weight = 3
+## [[menu.nav]]
+## name = "About"
+## url = "about/"
+## weight = 2
+##
+## [[menu.nav]]
+## name = "Tags"
+## url = "tags/"
+## weight = 3
+##
+## [[menu.nav]]
+## name = "Categories"
+## url = "categories/"
+## weight = 4
+##
+## [[menu.nav]]
+## name = "RSS"
+## url = "index.xml"
+## weight = 5
 #
-# [[menu.nav]]
-# name = "Categories"
-# url = "categories/"
-# weight = 4
-#
-# [[menu.nav]]
-# name = "RSS"
-# url = "index.xml"
-# weight = 5
