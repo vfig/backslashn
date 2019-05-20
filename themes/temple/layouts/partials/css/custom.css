@@ -170,7 +170,7 @@ code, kbd, pre, samp {
 
 .post-content {
 	z-index: 9;
-	overflow: auto;
+	overflow: visible;
 	padding: 0;
 	padding-bottom: 3em;
 	font-size: 16px;
@@ -182,8 +182,21 @@ code, kbd, pre, samp {
 	height: auto;
 }
 
+.post-content code {
+	font-size: 13px;
+	white-space: pre;
+}
+
 .post-content pre {
 	padding: 0.5em;
+	font-size: 12px;
+	width: 125%;
+	margin-left: -6.25%;
+	padding-left: 6.25%;
+}
+
+.post-content pre code {
+	font-size: 100%;
 }
 
 .post a {
