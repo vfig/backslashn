@@ -28,9 +28,9 @@ toc = true
 
 [taxonomies]
 # Builds a list page for each category given
-posts = "posts"
-tag = "tags"
-category = "categories"
+post = "post"
+tag = "tag"
+category = "category"
 
 
 [author]
@@ -42,7 +42,7 @@ twitter = "@adurdin"
 
 
 #[menu]
-# 
+#
 #[[menu.nav]]
 #name = "All posts"
 #url = "post/"

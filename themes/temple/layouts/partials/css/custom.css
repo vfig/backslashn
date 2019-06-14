@@ -61,7 +61,7 @@ code, kbd, pre, samp {
 	float: right;
 }
 
-.posts-name {
+.post-name {
 	text-transform: capitalize;
 	font-weight: bold;
 	padding-left: 1em;
@@ -69,21 +69,21 @@ code, kbd, pre, samp {
 	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.posts {
+.post {
 	font-family: verdana, arial, helvetica, sans-serif;
 	list-style-type: none;
 	padding-left: 1em;
 }
 
-.posts li p {
+.post li p {
 	margin-top: 0;
 }
 
-.posts li {
+.post li {
 	margin-bottom: 1em;
 }
 
-.posts li > a {
+.post li > a {
 	color: #369;
 	text-decoration: none;
 }

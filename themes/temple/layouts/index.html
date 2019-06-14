@@ -6,15 +6,15 @@
 	<div class="pure-u-11-12 pure-u-md-7-12">
 	<div class="post-content">
 	{{ .Content }}
-	  <p class="posts-name">Recent posts:</p>
+	  <p class="post-name">Recent posts:</p>
 
-	  <ul class="posts">
+	  <ul class="post">
 		{{ $baseurl := .Site.BaseURL }}
 		{{ range $name, $page := .Site.RegularPages }}
-		{{ if eq .Type "posts" }}
+		{{ if eq .Type "post" }}
 		<li>
 		  {{ if .Draft }}
-		  DRAFT: 
+		  DRAFT:
 		  {{ end }}
 		  <a class="post-list" href="{{ .Permalink }}">{{ $page.Title }}</a>
 

@@ -4,4 +4,4 @@ if [[ "$1" == "" ]]; then
     exit 1
 fi
 EDITOR=/Users/andy/bin/subl
-hugo new posts/$1.md --editor "$EDITOR"
+hugo new post/$1.md --editor "$EDITOR"
