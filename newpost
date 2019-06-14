@@ -1,7 +1,9 @@
 #!/bin/bash
 if [[ "$1" == "" ]]; then
     echo "newpost <slug>" >&2
+    echo "e.g. newpost thief/poor-officer-benny" >&2
     exit 1
 fi
 EDITOR=/Users/andy/bin/subl
-hugo new post/$1.md --editor "$EDITOR"
+mkdir -p "content/post/$1"
+hugo new "post/$1.md" --editor "$EDITOR"
