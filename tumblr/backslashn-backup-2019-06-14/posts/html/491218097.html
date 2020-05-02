@@ -1,0 +1,158 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Optimal Configuration</h1>
+                    <p>Here, mostly for my own future reference, are the various “hidden preferences” I configure on all my Macs. After setting these, you should log out and log in again.</p>
+
+<p><strong>Hidden apps are translucent in the Dock</strong></p>
+
+<pre><code>defaults write com.apple.Dock showhidden -bool YES
+</code></pre>
+
+<p><strong>Remove the delay before an auto-hiding Dock appears</strong></p>
+
+<pre><code>defaults write com.apple.Dock autohide-delay -float 0 &amp;&amp; killall Dock
+</code></pre>
+
+<p><strong>Save dialogs default to expanded view</strong></p>
+
+<pre><code>defaults write -g NSNavPanelExpandedStateForSaveMode -bool TRUE
+</code></pre>
+
+<p><strong>Disable “Are you sure you want to open?” warning dialogs</strong></p>
+
+<pre><code>defaults write com.apple.LaunchServices LSQuarantine -bool NO
+</code></pre>
+
+<p>Alternatively, create <code>~/Library/Preferences/com.apple.DownloadAssessment.plist</code>, with the following contents, to disable the quarantine flag for all future downloads:</p>
+
+<pre><code>&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+   "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+  &lt;dict&gt;
+    &lt;key&gt;LSRiskCategoryNeutral&lt;/key&gt;
+    &lt;dict&gt;
+      &lt;key&gt;LSRiskCategoryContentTypes&lt;/key&gt;
+      &lt;array&gt;
+        &lt;string&gt;public.item&lt;/string&gt;
+      &lt;/array&gt;
+    &lt;/dict&gt;
+  &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+<p><strong>Make Application Exposé only show windows from the current Space</strong></p>
+
+<pre><code>defaults write com.apple.dock wvous-show-windows-in-other-spaces -bool FALSE
+</code></pre>
+
+<p><strong>Finder won&rsquo;t warn you about extension changes</strong></p>
+
+<pre><code>defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+killall Finder
+</code></pre>
+
+<p><strong>App Store doesn&rsquo;t install new apps to Dock</strong></p>
+
+<pre><code>defaults write com.apple.appstore FRDebugShowInstallProgress -bool NO
+</code></pre>
+
+<p><strong>Set Twitter for Mac to use &ldquo;RT&rdquo; for &ldquo;quote tweet&rdquo;</strong></p>
+
+<pre><code>defaults write com.twitter.twitter-mac QuoteTweetSyntax '"RT @{USERNAME}: {TEXT}"'
+</code></pre>
+
+<p><strong>Disable window shadow in screenshots</strong></p>
+
+<pre><code>defaults write com.apple.screencapture disable-shadow -bool true
+killall SystemUIServer
+</code></pre>
+
+<p><strong>Disable the spell checker system-wide</strong></p>
+
+<p>In Lion:</p>
+
+<pre><code>defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool NO
+</code></pre>
+
+<p>In Snow Leopard:</p>
+
+<pre><code>sudo mv /System/Library/Services/AppleSpell.service/Contents/Resources \
+    /System/Library/Services/AppleSpell.service/Contents/Resources.disabled
+</code></pre>
+
+<p><strong>Disable Lion’s alphabetic key press-and-hold</strong></p>
+
+<pre><code>defaults write -g ApplePressAndHoldEnabled -bool false
+</code></pre>
+
+<p>(May require a restart)</p>
+
+<p><strong>Add a “follow up” button to Mail</strong></p>
+
+<pre><code><a href="http://www.cs.unc.edu/~welch/MailFollowup/">http://www.cs.unc.edu/~welch/MailFollowup/</a>
+</code></pre>
+
+<p><strong>Make Mail warn you if you mention an attachment but haven’t attached one</strong></p>
+
+<pre><code><a href="http://eaganj.free.fr/code/mail-plugin/">http://eaganj.free.fr/code/mail-plugin/</a>
+</code></pre>
+
+<p><strong>Make Terminal always show a tab bar</strong></p>
+
+<pre><code>defaults write com.apple.Terminal ShowTabBar -bool YES
+</code></pre>
+
+<p><em>Obsolete:</em></p>
+
+<p><strong>Hide the iTunes Ping dropdowns</strong></p>
+
+<pre><code>defaults write com.apple.iTunes hide-ping-dropdown -bool YES
+</code></pre>
+
+<p><strong>Restore the old iTunes store shortcut arrows</strong></p>
+
+<pre><code>defaults write com.apple.iTunes show-store-link-arrows -bool YES
+</code></pre>
+
+<p><strong>iTunes shortcut arrows don’t open the iTunes store</strong></p>
+
+<pre><code>defaults write com.apple.iTunes invertStoreLinks -bool YES
+</code></pre>
+
+<p><strong>Prevent itms:// links from opening iTunes</strong></p>
+
+<p>Using <a href="http://www.rubicode.com/Software/RCDefaultApp/">RCDefaultApp</a>, disable the <code>itms://</code>, <code>itunes://</code>, <code>itmss://</code> URLs, and the <code>itms</code> extension.</p>
+
+<p>Sources:</p>
+
+<ul><li><a href="http://www.macworld.com/article/143529/2009/10/slexposetips2.html">http://www.macworld.com/article/143529/2009/10/slexposetips2.html</a></li>
+<li><a href="http://www.tuaw.com/2010/03/25/prevent-itunes-web-previews-from-opening-itunes-automatically/">http://www.tuaw.com/2010/03/25/prevent-itunes-web-previews-from-opening-itunes-automatically/</a></li>
+<li><a href="http://osxdaily.com/2010/03/29/disable-the-are-you-sure-you-want-to-open-this-file-warning-dialogue-in-mac-os-x/">http://osxdaily.com/2010/03/29/disable-the-are-you-sure-you-want-to-open-this-file-warning-dialogue-in-mac-os-x/</a></li>
+<li><a href="http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html">http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html</a></li>
+<li><a href="http://pseudogreen.org/blog/yes_leopard_i_want_to_open_it_already.html">http://pseudogreen.org/blog/yes_leopard_i_want_to_open_it_already.html</a></li>
+<li><a href="http://caiustheory.com/app-store-hidden-preferences">http://caiustheory.com/app-store-hidden-preferences</a></li>
+<li><a href="http://rafeed.me/2011/01/06/twitter-for-mac-aka-tweetie-2-easter-eggs/">http://rafeed.me/2011/01/06/twitter-for-mac-aka-tweetie-2-easter-eggs/</a></li>
+<li><a href="http://osxdaily.com/2011/05/23/disable-shadow-screen-shots-mac/">http://osxdaily.com/2011/05/23/disable-shadow-screen-shots-mac/</a></li>
+<li><a href="http://www.chromescreen.com/disable-spell-checker-in-mac-osx-system-wide/">http://www.chromescreen.com/disable-spell-checker-in-mac-osx-system-wide/</a></li>
+<li><a href="http://osxdaily.com/2012/04/11/disable-the-file-extension-change-warning-in-mac-os-x/">http://osxdaily.com/2012/04/11/disable-the-file-extension-change-warning-in-mac-os-x/</a></li>
+</ul>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> April 2nd, 2010 2:46pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

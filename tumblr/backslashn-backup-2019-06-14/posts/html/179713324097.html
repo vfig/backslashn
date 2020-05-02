@@ -1,0 +1,41 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1></h1>
+                    <iframe width="500" height="300" src="https://www.youtube.com/embed/GvwgU2ogdBo?loop=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>Prompted by a comment on this youtube video I made of an Amiga 500 game project I was working on a couple years ago, I finally got around to writing up a little about how the scrolling worked. I really should&rsquo;ve been blogging this at the time, instead of just tweeting about it. :)</p>
+
+<p>First thing, my bitplanes are interleaved by lines, so BPLxMOD is set to three-tile-widths plus three whole lines, since I&rsquo;m using 4 bitplanes. Interleaving by lines lets me blit an entire tile in a single blitter op, instead of one for each bitplane. Saves a little bit of CPU time on each blit, basically.</p>
+
+<p>So this all runs in a big toroidal buffer (that is, a rectangular buffer that wraps horizontally and vertically. If you only scroll on one axis, that&rsquo;s a circular buffer) that is sized to fit 23 tiles width and 19 tiles + 1 line height, so BPLxMOD are configured accordingly. The viewport is 20 tiles wide and 16 tiles high, cause it&rsquo;s PAL 320x256. The buffer is logically a 22x18 tile &ldquo;free scrolling&rdquo; area, plus a 1 tile L-shaped edge for drawing new tiles into. By &ldquo;free scrolling&rdquo;, I mean: if you take center 20x16 tiles of the viewport as the starting position,  I can scroll up to 16 pixels in any direction—to show any part of the free scrolling area—just by setting BPLxPTx and BPLCONx appropriately at the start of my copperlist, and without needing to redraw any tiles. Because redrawing is slow!</p>
+
+<p>As soon as I start to scroll from that starting point, I then know if I&rsquo;m scrolling up or down, and left or right, and I can prepare to draw new tiles into the offscreen L-shaped part of the buffer—whose actual position in memory of course depends on the BPLxPTx pointers and whether I am treating it as being top+left, top+right, bottom+left, or bottom+right—that are appropriate for the direction that I&rsquo;ve started to scroll in. So that&rsquo;s just blitter work; but because it&rsquo;s offscreen, I wait until after VBLANK to start it, and it just runs while Denise is pushing pixels out to the monitor, and the CPU busy-waits for the blitter. This makes my blitting much slower, of course, since Denise&rsquo;s memory reads take priority, but it&rsquo;s fast enough: I still get the two tile strips drawn in about half a frame.</p>
+
+<p>The tricky bit in all of this is when the viewport overlaps the end of the buffer. If we only ever scroll vertically, it&rsquo;s much simpler: on any given frame, we have N full scanlines in the buffer between the BPLxPTx address and the buffer&rsquo;s end, so during vblank just set up the copper to wait until hblank of scanline N and then reset BPLxPTx to the start of the buffer. Denise then happily draws the remainder of the screen from there.</p>
+
+<p>But with horizontal scrolling as well, the end of the buffer ends up somewhere in the middle of a scanline, so now on any given frame we have N full scanlines, and one scanline with only M words in it (BPLCONx of course managing up to 16 pixels of horizontal scroll, so the contents of the buffer are always word-aligned—which is also necessary for blitting). It&rsquo;s possible to have the copper wait until midway across the scanline before writing BPLxPTx, but this always left a glitch of a few pixels when I did that. It might be possible without the glitch, I dunno, but I didn&rsquo;t manage it. So that&rsquo;s where the 1 extra line in the buffer&rsquo;s height comes in. It&rsquo;s an overflow area, so that whenever the viewport would overlap the end of the buffer mid-scanline, I instead have this scanline filled with duplicate pixels so I can let the scanline finish then in hblank, set BPLxPTx to the top of the buffer + 1. Whenever I draw new tiles, I afterwards get the blitter to copy the whole scanline from the opposite edge of the buffer into this overflow area, so it&rsquo;s ready and waiting when the viewport gets there.</p>
+
+<p>And with all that, I get infinite horizontal and vertical smooth scrolling at a pretty high speed.</p>
+
+<p>Now I mentioned I&rsquo;ve got a 22x18 tile free scrolling area. You can get infinite scrolling with just one row and one column of extra tiles, so 21x17, but that means you can only scroll up to 8 pixels in any one direction before you absolutely must draw new tiles. That reduces the maximum scroll speed you can get, or (looking at it the other way around) means you need to draw new tiles more frequently. Since drawing tiles is pretty slow (especially when done while the screen is displaying), I can&rsquo;t get much other work done on a frame where I have to redraw. I didn&rsquo;t get this project to the point of adding sound—perhaps I&rsquo;ll pick it up again one day—but since audio must take priority over video (cause the glitches are much more irritating), I wanted to give myself breathing room so that I could happily defer tile redraws for a frame or maybe two if I needed to give priority to handling audio. And so the two rows and columns of extra tiles in the 22x18 free scrolling area gives me better scroll speed and much more timing flexibility.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> November 3rd, 2018 8:20am </span>
+                                                          <span class="tag">gamedev amiga</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

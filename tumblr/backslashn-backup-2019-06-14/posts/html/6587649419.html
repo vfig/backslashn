@@ -1,0 +1,41 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Simulate cellular connections on Mac (for iOS simulator)</h1>
+                    <p>Oliver Drobnik, at <a href="http://www.cocoanetics.com/2011/06/how-to-simulate-cellular-connections-on-your-mac/">Cocoanetics</a> writes:</p>
+
+<blockquote>
+  <p>Now our trick creates a new IP firewall rule restricting the bandwidth to 112 kBits. You have to do this modification as root, hence the sudo and the first sudo will ask for your root password.</p>
+
+<pre><code>sudo ipfw add 500 pipe 1 ip from any to any
+sudo ipfw pipe 1 config bw 112kbit/s plr 0 delay 20ms
+</code></pre>
+  
+  <p>Now you can test your app in simulator and enjoy the much faster turnaround when debugging the handling of slow connections.</p>
+  
+  <p>To remove the firewall rule you use the following command:</p>
+
+<pre><code>sudo ipfw delete 500
+</code></pre>
+</blockquote>
+
+<p>I keep intending to make a note of these commands for future reference, every time I see them—this time I’ve done it.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> June 16th, 2011 3:36pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

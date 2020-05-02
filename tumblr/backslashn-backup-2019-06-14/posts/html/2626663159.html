@@ -1,0 +1,54 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Twitter for Mac hidden preferences</h1>
+                    <p>Allow Escape to close the “New Tweet” window:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac ESCClosesComposeWindow -bool YES
+</code></pre>
+
+<p>Hide Twitter for Mac when in background:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac HideInBackground -bool YES
+</code></pre>
+
+<p>Compose windows don&rsquo;t float over all windoes:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac NormalComposeWindowLevel -bool NO
+</code></pre>
+
+<p>Scrolling brings Twitter for Mac to the foreground:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac ScrollingMakesKeyAndOrdersFront -bool YES
+</code></pre>
+
+<p>Type anywhere in the app to begin a new tweet:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac TypeAnywhereToTweet -bool YES
+</code></pre>
+
+<p>Enable the “timeline avatar derepeater”:</p>
+
+<pre><code>defaults write com.twitter.twitter-mac UserTimelineDerepeater -bool YES
+</code></pre>
+
+<p>Set the link color: well this one&rsquo;s harder, because it uses a serialised NSColor value, or so I assume. So I&rsquo;ll skip it.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> January 6th, 2011 8:51pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

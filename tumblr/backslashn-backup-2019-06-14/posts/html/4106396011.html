@@ -1,0 +1,87 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Escherisch</h1>
+                    <p>For <a href="http://forums.mapcore.net/viewtopic.php?f=57&amp;t=16032">Mapcore&rsquo;s cube challenge</a>,
+I built a Half-Life 2 Episode Two map. It had to be constrained to 1024x1024x1024
+units.</p>
+
+<p>Typically when confronted with an arbitrary constraint, I try to find a way to
+work around it. For example, a TF2maps mini-contest challenged us to build a
+control point in 2048x2048 units (no height limit), but without a 3D skybox. So
+I built the point, and a huge window out of which you could see stars, and a
+large spinning Earth. It looked like the Earth was in a 3D skybox, but in fact
+it was a complicated fake involving texture proxies&ndash;and was a great learning
+exercise for me; texture proxies are surprisingly powerful in Source.</p>
+
+<p><a href="http://www.flickr.com/photos/velvetfistironglove/4201887880/" title="Space Fortress 2 by velvetfistironglove, on Flickr"><img src="http://farm3.static.flickr.com/2776/4201887880_b8d3357228_z.jpg" width="640" height="360" alt="Space Fortress 2"/></a></p>
+
+<p>My original idea for the mapcore challenge was to make the map appear to be
+larger than 1024^3. For example, the starting room was going to be the
+interior of a room that appeared to be about 2048 units long. You would be able
+to walk around the entire room, and thus apparently be in a larger level. To do
+this (and similar tricks), I was going to segment the vertical space into
+stacked slices, each 128 or 256 units high, and duplicated the room geometry
+into two of these slices; each having one half of the room within the 1024^3
+cube. And I&rsquo;d use a trigger_teleport to transport the player between each half,
+thus making it appear to be a single continuous space.</p>
+
+<p>This was certainly doable, but would have been a pretty boring space. I didn&rsquo;t
+really have any clear idea what I would do with the space beyond this illusion.
+So casting around for inspiration, I ran across Escher&rsquo;s <em>Ascending and Descending</em>
+again. This time I noticed not the endless staircase illusion, but the surrounding
+architecture: low sloped roofs, flat roofs, arches, stairways. I quickly got
+the vision of a small village, with small passageways, stairways onto roofs and
+into basements, with teleports to make physically impossible connections
+between them. So that is what I built.</p>
+
+<p><a href="http://www.flickr.com/photos/velvetfistironglove/5560499091/" title="The town by velvetfistironglove, on Flickr"><img src="http://farm6.static.flickr.com/5149/5560499091_5ea6421c77_z.jpg" width="640" height="480" alt="The town"/></a></p>
+
+<p><a href="http://dl.dropbox.com/u/571452/mapcore/escherisch2.zip">Download the map here</a>.
+Put it in your Steam folder, in the <b>steamapps/yourusername/half-life 2 episode two/ep2/maps</b> subfolder, then run Episode 2 and launch the map by typing <b>map escherisch</b> in the console.</p>
+
+<p>There are two impossible connections between the edges of the map at ground
+level. The top of the tower can be reached, but the stairs inside it will not
+take you there, though they are not a dead end. And one passageway will lead
+you to the bridge visible in the background of the picture above. The bridge
+itself is outside the 1024^3 playable area, but the player is not; the map
+itself is used as its own 3D skybox at a 1:1 scale to make this illusion.</p>
+
+<p>Two key factors influence the look of this map. I found early on that I was
+unable to get the precalculated radiosity lightmaps to match in both areas
+around a teleport; this led to a noticeable shift in shadows or colours while
+teleporting, breaking the illusion. So I went with a fullbright map&ndash;or rather,
+a map with only UnlitGeneric textures. So I detailed the map with 11 shades of
+grey, applying them manually to provide the appearance of flat lighting, while
+maintaining contrast between the visible shapes. That turned out to be quite an
+interesting challenge, and very helpful in emphasizing the silhouettes of the
+geometry that the player encounters.</p>
+
+<p>In a last minute change, I added colour correction, shading all light grey tones
+with a very faint, barely noticeable sepia, and all mid to dark grey tones with
+a dull red. White and black remained untinted; I think the result ended up much
+more attractive than the plain greys. However, I submitted the map in a rush,
+as I had to leave early the next day, and forgot to include the colour
+correction table. So while my screenshots showed the red tinting, those trying
+out the map would unfortunately only see it in greyscale. Oh well.</p>
+
+<p><a href="http://www.flickr.com/photos/velvetfistironglove/5560499017/" title="The tower by velvetfistironglove, on Flickr"><img src="http://farm6.static.flickr.com/5256/5560499017_21f22384c7_z.jpg" width="640" height="480" alt="The tower"/></a></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> March 26th, 2011 1:10pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

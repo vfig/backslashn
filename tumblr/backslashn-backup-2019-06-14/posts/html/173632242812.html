@@ -1,0 +1,123 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Thief II: The Vocal Age</h1>
+                    <p>This follows on from <a href="http://backslashn.com/post/173628712752/thief-told">my second post about Thief&rsquo;s facial animation feature</a> (<a href="http://backslashn.com/post/173587220222/thief-the-speech-project">the first post is here</a>.</p>
+
+<blockquote>
+  <p>It was finished. All that was needed now was to make a demo to show it off…</p>
+</blockquote>
+
+<p>Nothing is ever that easy, is it?</p>
+
+<p>Now that it was clear that the feature was only in Thief 2, rather than the demo being some random guard humming and mumbling to himself, instead there was an obvious conversation to use to show off the feature: the archers of Lady Van Vernon and Master Willey hurling insults at each other across the rooftops, from Life of the Party. So I immediately set work on that.</p>
+
+<p>First I added a second archer to the test map, this time the one with the purple shirt. And quickly hacked a copy of his textures with the same sketched mouths as the first (red-shirted) archer. Loaded up the map and checked that he, too, moved his mouth when coughing and muttering. Good.</p>
+
+<p>Identifying the speech schemas for the conversation in question just needed a quick look at <code>CONV.SCH</code>:</p>
+
+<pre><code>...
+
+//////////////////////////////////
+//MISSION 11 - LIFE OF THE PARTY//
+//////////////////////////////////
+
+//c1101 -Stand off
+schema sg11101A     //"...And I'm telling you.."
+archetype AI_CONV
+sg11101A
+schema_voice vguard1  1 c1101  (LineNo 1 1)
+
+schema sg51101B
+archetype AI_CONV
+sg51101B
+schema_voice vguard5 1 c1101  (LineNo 2 2)
+
+...
+</code></pre>
+
+<p>Then it was back to Dromed and <code>find_obj sg11101A</code> and so on to select the schemas one by one in the Object Hierarchy, and add the Sound &gt; Motion property to each. I don&rsquo;t know if there&rsquo;s a better process to do this en masse than manually, but for just eight schemas the manual steps are fine. And so I regenerated <code>facepos.str</code>.</p>
+
+<p>Now conversations in Thief use the so-called pseudoscripts provided by the AI &gt; Conversation property. A pseudoscript is basically a bunch of actions that can be performed: play a sound schema or a motion schema, turn to face a particular direction, move to someplace, add or remove a metaproperty (for behavioural changes), and so on. Due to the high barrier to writing custom <code>.osm</code> scripts for the game (the script language is basically a custom C++ preprocessor), many fan mission designers&ndash;I haven&rsquo;t looked to see if the same is true of the official missions!&ndash;also used this pseudoscript system for other scripted behaviours. So anyway, I needed a conversation setup.</p>
+
+<p>So I opened up the Life of the Party mission and found the object there that drove the archers&rsquo; conversation. With my usual hacky method for copying a few things between mission files in the editor, I went through each step of the conversation and screenshotted the edit dialog, pasting them into the copy of Photoshop I always have running. Then I can just refer to the screenshots when copying the stuff into my own mission. There&rsquo;s probably a better way of doing this, but&ndash;knowing Dromed&ndash;doubtful that there&rsquo;s a <em>much</em> better way. And it turned out to be quite a good thing that I copied it this way.</p>
+
+<p>So anyway, I went back to my mission and created a conversation, linked it to my two guards, then went step by step through the eight pages and filled out the speech actions in each (not bothering with the motions and behavioural bits just yet). Added a button to trigger it, hit Alt+G to get into the game, and pushed the button.</p>
+
+<p><figure class="tmblr-full" data-orig-height="147" data-orig-width="355" data-orig-src="https://i.imgur.com/It7KEMT.png"><img src="https://66.media.tumblr.com/255dc695d770a034dfbb52e805cafd59/tumblr_inline_p8bbbk3g5O1qzlvtz_540.png" data-orig-height="147" data-orig-width="355" data-orig-src="https://i.imgur.com/It7KEMT.png"/></figure></p>
+
+<p><figure data-orig-height="193" data-orig-width="286" data-orig-src="https://i.imgur.com/wVroku5.png"><img src="https://66.media.tumblr.com/946d56410ad1366dfc4991e5e2608b91/tumblr_inline_p8bbbladBT1qzlvtz_540.png" data-orig-height="193" data-orig-width="286" data-orig-src="https://i.imgur.com/wVroku5.png"/></figure></p>
+
+<p>Looking good. And of course I&rsquo;d forgotten to save the changes to the test map.</p>
+
+<p>Taking a look at the source code again, I found that the speech system helpfully offers a callback interface for other parts of the game to get notified when a line of dialog plays; but it&rsquo;s only used in two places: the face animation uses this to know when to start and stop animating; and the conversation system uses it to know when a line has finished, so that it can play the next step of the pseudoscript. Shouldn&rsquo;t be a problem though, cause these kinds of callback systems are always set up to handle multiple callbacks, and &hellip; oh.</p>
+
+<pre><code>// NOTE: if kCallbackEntryMax is not 1, a crash occurs at the end of a conversation
+//   inside SpeechEndCallback, because the first callback causes the speechEndCallbackHash
+//   to delete the callback function array, so the second callback ptr is a bullshit ptr - patmc
+//#define kCallbackEntryMax 4
+#define kCallbackEntryMax 1
+</code></pre>
+
+<p>Ah. So the speech system originally handled up to four different callbacks, but the conversation system didn&rsquo;t manage its own memory properly and so someone hacked the speech system to only support one at a time. The assertion error was a check that the array of callbacks wasn&rsquo;t already full: and since both the face animations and the conversation were trying to register callbacks, the first one in filled up the array. This was not going to be easy to work around.</p>
+
+<p>Anyway, now that I knew the source of the assertion failure and why it was happening, I decided to run the test map again and ignore the failure this time. Here be dragons, but I figured they were reasonably polite dragons that wouldn&rsquo;t cause much harm. And so once again I pressed the button and got the error, but this time chose Cancel. The game continued, and the first guard proceeded to spout his line of dialog, and stopped. And then the other guard just stared mutely at him. Like he&rsquo;d forgotten his lines. Anyway, this is where it really clicked with me that the conversation system needed the callbacks installed to work properly, otherwise it just never moves on from the first step.</p>
+
+<p>Because this limit is baked into the code and the statically allocated array of callbacks, it&rsquo;s not really changeable. And who knows if the bug described still exists even if it was changed? (It probably does.) So I had to come up with a different way of handling this.</p>
+
+<p>And that way was: eight different conversations! One for each line. So thankfully I still had all my screenshots of the conversation setup, so it was straightforward to refer to them again when setting up the eight conversations. But a new problem now: one button wasn&rsquo;t going to be enough to set off the conversations properly, so it was time for more hacks!</p>
+
+<p>I wrote a Squirrel script for the button that would turn on the first conversation, wait for a time, then turn on the second conversation, wait again, and so on. I opened up each of the sound files for the conversation in Audacity to get the length, and set the wait times accordingly. And it worked! It&rsquo;s ugly as hell, and painful, and not at all robust enough to use in anything that&rsquo;s going to ship, but it worked. The first guard finished his line, and a fraction of a second later the second conversation was triggered and the second guard remembered to say his line, and so on. At last time for the final spit and polish, I thought.</p>
+
+<p>I googled for references for mouth positions for different sounds, and found a ton of cartoon ones, and a few very bland and expressionless photographic ones, and then <a href="https://miko-noire.deviantart.com/art/Mouth-References-436290183">this one by Miko-Noire</a> which&ndash;although it&rsquo;s not really for different sounds&ndash;had exactly the amount of liveliness I was looking for.</p>
+
+<p><figure class="tmblr-full" data-orig-height="421" data-orig-width="400" data-orig-src="https://i.imgur.com/4W80Zfs.jpg"><img src="https://66.media.tumblr.com/49d0d579bd9efd7c7d7d87f37aef3d06/tumblr_inline_p8bbbl43mj1qzlvtz_540.jpg" data-orig-height="421" data-orig-width="400" data-orig-src="https://i.imgur.com/4W80Zfs.jpg"/></figure></p>
+
+<p>So I slapped those into the guard textures, and with a bit of slapdash colour alteration, they fit both the light-skinned and dark-skinned guards pretty well. A proper art job would have given them different mouths, of course, and probably also adjusted the cheeks to match. But I&rsquo;m no artist, and this was already looking much better than my temporary version.</p>
+
+<p><figure class="tmblr-full" data-orig-height="256" data-orig-width="512" data-orig-src="https://i.imgur.com/dcWUJ34.jpg"><img src="https://66.media.tumblr.com/ea32cd0f192c5ee372c88d5adbe1c8bc/tumblr_inline_p8bbbl7CrZ1qzlvtz_540.jpg" data-orig-height="256" data-orig-width="512" data-orig-src="https://i.imgur.com/dcWUJ34.jpg"/></figure></p>
+
+<p>There was one final bug waiting for me. You see, the face animation system will animate the face for a speech sample even if it doesn&rsquo;t have an entry in <code>facepos.str</code>. It just plays a predefined, simplistic animation in a loop:</p>
+
+<pre><code>// If there's no animation string we change frames in a fixed
+// sequence.
+static int aTimedAnim[8] = { 1, 2, 2, 3, 2, 2, 1, 1 };
+</code></pre>
+
+<p>And this had probably been coming up before, but now that the faces looked better and I was paying attention to how they looked, I saw this animation coming up. It was now quite noticeable, because it doesn&rsquo;t have the neutral &ldquo;mouth closed&rdquo; frame, nor either of the two frames where my new images had the mouth wide open. So now I could see that randomly, one or the other of the guards would just flap their lips continually without ever really opening or closing their mouth: the telltale sign that this animation was being used.</p>
+
+<p>Well, I spent a lot of time trying to figure this one out. I thought maybe there was a race condition, and so the strings file needed to be preloaded (nope). I thought perhaps the speech samples needed to be preloaded (nope). I thought maybe there sometimes wasn&rsquo;t enough time at the end of one line for the sample to actually finish, so a bit more delay between lines might help (nope). I thought maybe the conversation callbacks were the issue, and that triggering the guards&rsquo; lines through a horrible hack involving AIWatchObj links and teleporting markers around&ndash;but that didn&rsquo;t even work, let alone fix the problem. In the end, I just decided to live with it. In the worst case, I could record multiple takes, and just splice in each guard&rsquo;s line when it actually worked. It&rsquo;d be a pain, but it&rsquo;d work.</p>
+
+<p>So finally the last thing I did was throw in a couple of camera markers, and update the script to attach the player&rsquo;s camera to each in turn, so that each guard would get a closeup. Oh, and put into the conversation the motions and behaviour changes needed to make the characters move and then start shooting at each other at the end.</p>
+
+<p>And then when I was finally read to record, all eight lines played perfectly, with the correct mouth animations, all on the first take. So maybe there is a Master Builder after all! so here, finally is the result:</p>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pIAyFXP-6NI?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<p><strong>Update:</strong> If you want to muck about with this yourself, you can <a href="https://github.com/adurdin/thiefy-stuff/raw/master/T2%20Face%20Animation%20Demo/t2_face_animation_demo.zip">download the demo mission from Github</a>. You&rsquo;ll need Thief 2 NewDark 1.25 to open it.</p>
+
+<p><strong>Update 2:</strong> NewDark 1.26 has just been released, with this gem in the patch notes:</p>
+
+<pre><code>- restored "kCallbackEntryMax" (speech callback) limit from 1 to 4 to avoid "i &lt; kCallbackEntryMax" asserts
+</code></pre>
+
+<p>This means using Face Textures should no longer break Conversations, and vice-versa. One could actually ship a mission using this feature now!</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> May 6th, 2018 9:52am </span>
+                                </div>
+            </body>
+        </html>
+
+        

@@ -1,0 +1,62 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>An iPad game made in 24 hours</h1>
+                    <p>The challenge: build a game in 24 hours. About a week ago, two internet-friends of mine, Tom Pritchard and Frazer Grant decided they would challenge themselves to build a game in 24 hours:</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_le702uSGBz1qzlvtz.png" alt="The challenge"/></p>
+
+<p>Tom built a <a href="http://tom-pritchard.co.uk/stuff/jimmychristmas/">simple platformer</a>, and Frazer built the core of a <a href="http://www.youtube.com/watch?v=o27OE3ALH9s">side-scrolling shmup</a>, which he <a href="http://midget31394.tumblr.com/post/2444498615/24-hour-game-post-mortem">wrote about</a> on his blog. They both tweeted their progress as they were going, using the <a href="http://search.twitter.com/search?q=%2324hourgame">#24hourgame hashtag</a>, and since I follow both of them on twitter, I was inspired to take the same challenge.</p>
+
+<p>I began at 11:00 on Monday, with a cup of tea—the best way to begin any project. I also decided to try using a <a href="http://en.wikipedia.org/wiki/Pomodoro_Technique">tomato</a> to manage my time and ensure I took enough (but not too many) breaks. I already had a basic concept in mind; a couple of weeks before I’d slapped together a prototype in UIKit to test out a possible multitouch control style for a top-down tactical shooter on the iPad, using line drawing for movement. This time around, I wanted to see how I could build a game in the style of a twin-stick shooter, but with controls designed for a touchscreen (I don’t consider the “virtual analog stick” that many iOS games use to be at all suitable for touch input).</p>
+
+<p>The game would have you controlling a policeman, using various non-lethal weapons to control a crowd of unarmed student protestors. You&rsquo;d use two fingers for input: one finger dragged around the screen would control movement, with your character always walking directly toward your finger. A second finger tapped on the screen would fire your current weapon. You could fire in any direction, not just the direction you were currently moving.</p>
+
+<p>I knew from the beginning that I’d use <a href="http://www.cocos2d-iphone.org/">cocos2d</a> to build the game. It provided me with the basics of a game engine, giving me the code to manage sprites, sounds, and so on. It also comes bundled with <a href="http://www.box2d.org/">Box2D</a>, a 2D physics engine, whose API I now have quite an animosity toward—although it did most of what I needed in the end.</p>
+
+<p>My progress can be seen best by searching for <a href="http://search.twitter.com/search?q=%2324hourgame">#24hourgame on twitter </a>. After six hours had elapsed, I had the player input working, together with some basic enemies, who always walked directly toward the player character. But at this point, neither you nor the enemies could hurt each other. Instead, they just mobbed about you, like groupies around a rock star.</p>
+
+<p>After almost four more hours, you could shoot the enemies, although they could not yet hurt you. I grabbed my tripod, set it up as short as possible on my desk, with my iPhone held to it by rubber bands, and made a short video of the game as it was so far (you can faintly hear in the background <a href="http://www.youtube.com/watch?v=4S1WBP91YKA">“Celebration Guns” by Stars</a> that was playing in iTunes at the time.</p>
+
+<p><object width="480" height="385"><param name="movie" value="http://www.youtube.com/v/Oz6OxOCSx3s?fs=1&amp;hl=en_US&amp;rel=0"><param name="allowFullScreen" value="true"><param name="allowscriptaccess" value="always"><embed src="http://www.youtube.com/v/Oz6OxOCSx3s?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object></p>
+
+<p>I took an extra hour break to have some dinner and upload that video, and planned to do some graphics when I resumed working.  It was during this break that I realised the original plan would have to change. Doing graphics or animations for humans from a top down perspective that I’d be happy with was way beyond my drawing capabilities. So instead I decided at this point that I&rsquo;d make the game about a spaceship shooting other spaceships. It lacked the political overtones that the original idea had, but solved the graphics problem for me—and also the sound effects problem. You have this decision to thank for the sound effects not being me making a bunch of pain noises into my headset mic.</p>
+
+<p>I began with some HUD graphics, and built a working HUD for the player&rsquo;s health and ammo, and drew an enemy spaceship. Next on my list was music and sound effects. I knew if I left them until late that I&rsquo;d probably never do them. I created a number of retro sound effects with <a href="http://www.drpetter.se/project_sfxr.html">Tomas Pettersson’s SFXR</a>, specifically the <a href="http://itunes.apple.com/gb/app/sfxr/id349840825?mt=8">free iPhone port</a> that Chris Grassib made. That meant I was hearing the sound effects through the iPad speaker, exactly as they would sound in-game.</p>
+
+<p>Music I knew would be beyond my capabilities, so I would need to find some somewhere that I could use. Someone on twitter suggested I search soundcloud.com for creative commons licenced music, and sure enough, I found something I liked within a few minutes. Three tunes by <a href="http://stad400.burningdarkness.de/">“STA$D400” Sven Hendriks</a>: <a href="http://soundcloud.com/stad400/sta-d400-machine-code">Machine Code</a>, <a href="http://soundcloud.com/stad400/sta-d400-argon">Argon</a>, and <a href="http://soundcloud.com/stad400/sta-d400-weirdometer">Weirdometer</a>. I couldn’t decide which of the three I liked best, so I put all three in; which one you get when playing is chosen randomly.</p>
+
+<p>It was now 3am. I needed more art, so I drew a player sprite, some explosion sprites, and one sprite for a second, faster and tougher enemy. You can&rsquo;t see them very well in the video below, so I&rsquo;ll reproduce them here in all their programmer art glory:</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_le703m3X4T1qzlvtz.png" alt="I are a artist"/></p>
+
+<p>I now added animation to the enemy sprites, and the animated explosion when they died. Animating sprites in Cocos2D turned out to be very unintuitive to me, and more complicated than I expected; animations are a significant part of almost every 2D game, so the fact that the framework didn’t make them trivial to incorporate took me by surprise.</p>
+
+<p>I also needed a starfield for background art. Rather than drawing a new one, I instead ripped off a skybox I drew last year for <a href="http://forums.tf2maps.net/showthread.php?t=11253">one of my Team Fortress 2 maps</a>. <a href="http://forums.tf2maps.net/showthread.php?t=11194">This skybox</a> had lots of stars, nebulae, and bright galaxies. I cropped out a suitable 1024x768 portion, and dropped that into the scene.</p>
+
+<p>There were now only four hours left. The only things remaining on my must-do list were: making the player able to die, a game menu to return to after dying, and an icon. Other things I wanted to do if there was time were the second-level enemy, scoring, and health and weapon pickups. Cocos2D has some simple menu support built in, so I quickly put together some text in Photoshop in Bank Gothic and OCR A fonts and one of Photoshop’s stock gradients, and had the menu all done in about 15 minutes. The icon took a little longer, only because I had to look up again what different size icons were required for an iPad app. Then I took another break for an hour to cook and eat breakfast.</p>
+
+<p>After breakfast, I implemented scoring pretty quickly, and the second enemy was also very quick to build in, so I spent a bit of time tweaking when it would spawn and how fast it was. I now had only 45 minutes left before 11:00—which was not going to enough, I thought, to draw and code in the powerups and a second weapon. So I decided to call it done at this point. Instead, I used the time to do a second video. Since the first one had a very odd angle, this time I attached a wooden spoon to the tripod, then rubber banded the iphone to it. This meant the iphone could sit directly above the iPad, and capture it much better. You can see the result below.</p>
+
+<p>I was completely stoked with what I’d managed to get done. When I started the project, I fully expected it to end up largely unplayable, with terrible art and likely no sound. Instead, the art is passable, and the sound effects and music really tie the game together.</p>
+
+<p><object width="480" height="385"><param name="movie" value="http://www.youtube.com/v/-0oiIE2vQzU?fs=1&amp;hl=en_US&amp;rel=0"><param name="allowFullScreen" value="true"><param name="allowscriptaccess" value="always"><embed src="http://www.youtube.com/v/-0oiIE2vQzU?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> December 29th, 2010 1:59pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

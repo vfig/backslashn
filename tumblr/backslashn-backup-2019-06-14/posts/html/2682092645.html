@@ -1,0 +1,79 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1></h1>
+                    <h1>User Interface Design in Twitter for Mac, part I</h1>
+
+<p>With the launch of the Mac App Store last week, the long-awaited Tweetie 2, a.k.a. Twitter for the Mac was relased. As with his previous apps, <a href="http://twitter.com/lorenb">Loren Brichter</a> has employed many custom user interface elements. In the past, his willingness to experiment with UI has led to several usable and intuitive innovations. While the Twitter app shows evidence of a bold and well planned design, a lack of thorough consideration of details has led to many places where established usability principles and interface conventions are compromised.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5334295910/"><img src="http://farm6.static.flickr.com/5001/5334295910_97041f08e8_o.png" alt="Twitter’s main window"/></a></div>
+
+<p>Twitter’s main window has a striking new appearance. Every element here is designed to give prominence to the tweets, which is what the app is primarily about. Everything else is there to manipulate the tweets or the app itself. To this end, the user interface has been pared down and subdued, and the only high-contrast elements visible are:</p>
+
+<ul><li>Tweets</li>
+<li>The tweeter’s name and avatar</li>
+<li>The avatar of the user’s selected account</li>
+<li>The icon of the selected page.</li>
+</ul><h2>Title bar</h2>
+
+<p>The most notable omission in the window’s design is the title bar. In standard windows, the title bar serves three purposes: it displays the title of the document or app, it contains the “traffic light” buttons to close, minimise, and zoom the window, and it allows the user to move the window around the screen. The Twitter app’s window, as focused and distinctive as it is, does not need to display a title, and so omits the title bar. It still retains the traffic lights. But in removing the title bar, it has lost the affordance for moving the window.</p>
+
+<p>This is not an unreasonable decision: an app like Twitter will be placed to one side or the other of the screen and rarely moved again. A title bar would be wasted space for most of the time app’s life; so its removal it is bold yet justifiable. There is one problem: when the app is first launched, the window appears in the middle of the screen. This immediately presents the user with a problem: he wants to move the window to his preferred corner, yet the window presents no obvious way to move it. Eventually, trial and error will lead the user to discover that dragging in the black sidebar (even one of the icons in it) will move the window. But it is a definite mistake when the first thing an app does is present the user with a problem and give them no hint at a solution. If you create a custom user interface, you must be prepared to follow through.</p>
+
+<p>How could this be improved? Firstly, the app should avoid the problem in the first place. It should make an initial decision about the window’s position, opening by default on the left- or right-hand edge of the screen, so the user will only need to move it if the default does not suit his preference. Secondly, the app should present a perceived affordance for moving the window.  In earlier versions of Mac OS, it was common to use parallel lines or a texture of dots to indicate a draggable element, reminiscent of the textures used on tool handles to increase grip. This survives in the current OS only in the resize handles in the Dock and the lower-right corner of a window, so its continued applicability as an affordance for dragging may be questioned; but it does not at least suggest any other action. A light texture of dots on the blank area of the sidebar would, I believe, help indicate that it can be dragged to move the window.</p>
+
+<h2>Traffic lights</h2>
+
+<p>Though the title bar has gone, the “traffic light” buttons remain, allowing the user to close or minimise the window. They are slightly smaller and closer together than the usual, and instead of being red, yellow, green, they are all black to reduce their prominence and keep the focus on the tweets. But their position, shape, and shiny appearance leave no doubt of their purpose.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5333681123/"><img src="http://farm6.static.flickr.com/5086/5333681123_792f583003_o.png" alt="Traffic lights"/></a></div>
+
+<p>There are, however, two small faults here. On the left is the traffic lights as they appear normally, and on the right the appearance when the mouse pointer hovers over them. The buttons are so dark that there is barely any contrast between them and the close, minimise, and zoom symbols that appear on hover. To fix this, the buttons should become lighter on hover, improving the contrast. The second fault is this: the Twitter app does not support zooming the window, yet the zoom button appears identical to the other buttons; worse, it also reacts visually to hovering and clicking, while performing no action at all. Compare this to the zoom button in System Preferences, which remains in a disabled appearance at all times. The normal disabled appearance of traffic light buttons is identical to their appearance when the app is inactive; when Twitter is inactive, the traffic light buttons become duller and darker in appearance, so the zoom button should have this appearance at all times.</p>
+
+<h2>Sidebar</h2>
+
+<p>The elements in the sidebar allow the user to select between multiple Twitter accounts, and to move between different pages for each account: timeline, mentions, messages, lists, profile, and search. The account buttons show the avatars for each account, and behave in an accordion fashion. The page icons are shown below selected account avatar, and the other avatars are dimmed. Similarly, the selected page icon is shown in bright blue, and the icons for other pages have a dim gradient. It is worth noting that this gradient is darkest in the middle, and lighter at the top and bottom edges, keeping the icons subdued but providing better contrast at the edges, helping the shape to stand out from the background. The icon shapes are well differentiated, and with the exception of “lists” the icons use well-established symbols corresponding to their meaning.</p>
+
+<p>Clicking a different account avatar animates the sidebar between the two: the previously selected avatar fades to a dim appearance, and its page icons fade out and slide into it. This happens simultaneously with the clicked avatar moving up and brightening and its page icons appearing and sliding out of it. This is a great use of animation, and reinforces that the page icons belong to the avatar button above them. But the animation that happens to the tweet list while this happens is the same as the animation that occurs as you switch between different pages in the same account: the new page slides in from the left side over the top of the tweet list. Here, watch it:</p>
+
+<div style="text-align: center;"><object type="application/x-shockwave-flash" width="419" height="682" data="http://www.flickr.com/apps/video/stewart.swf?v=71377" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=c2053863fe&amp;photo_id=5334292554"><param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=71377"><param name="bgcolor" value="#000000"><param name="allowFullScreen" value="true"><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=71377" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=c2053863fe&amp;photo_id=5334292554" height="682" width="419"></embed></object></div>
+
+<p>This horizontal animation is at odds with the vertically oriented icons, which muddles the model the app is trying to establish. In addition, the animation remains the same even if you are switching back and forth between two pages, although the “slide over” animation sets up the expectation of a “slide back off” animation when returning to the previous page. In both these aspects, Tweetie’s animation was better, reinforcing the vertical orientation and remaining consistent when switching back and forth:</p>
+
+<div style="text-align: center;"><object type="application/x-shockwave-flash" width="419" height="682" data="http://www.flickr.com/apps/video/stewart.swf?v=71377" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=830ed0571c&amp;photo_id=5334283380"><param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=71377"><param name="bgcolor" value="#000000"><param name="allowFullScreen" value="true"><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=71377" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=830ed0571c&amp;photo_id=5334283380" height="682" width="419"></embed></object></div>
+
+<p>So clicking a dimmed icon or avatar selects it. Clicking the selected avatar or the selected page icon has an unexpected behaviour: the tweet list scrolls to the top. But this is not implemented consistently; only the timeline and mentions icons do this; the others do not. Nor does this behaviour work in the icons for a user&rsquo;s tweets or favourites in their profile page. This inconsistency may cause occasional confusion for the user.</p>
+
+<p>Hover over an icon in the sidebar for a brief moment and a label for it will animate fading in and sliding a short way horizontally. This label does not appear instantaneously like the labels for applications in the Dock, but it appears much more quickly and in a different style than is established for tooltips in the operating system. This means that the label will often appear, unwanted, if the mouse is merely moved a little slowly across the icon, and the superfluous animation draws attention to it unnecessarily. Oddly, Twitter employs the system standard tooltips in other places, for example the icons to switch between different pages in a user’s profile.</p>
+
+<p>As mentioned previously, dragging in the sidebar will move the whole window. This is true even if you click and drag one of the avatars or icons in the sidebar, so the app has to distinguish between a simple click and the start of a drag. Because a mouse is very easy to accidentally nudge while clicking, a small “dead zone” is conventionally employed to distinguish the two: if the mouse pointer is moved more than five or so pixels away from where the click began, it’s safe to assume the user intended to begin a drag. But if the mouse pointer remains in the area, the action is a click. Twitter’s sidebar has a very small dead zone when distinguishing clicks from drags: if the mouse moves more than two pixels during the click, it is interpreted as a drag<a href="#fn1" style="font-size:80%; vertical-align: super;">1</a>. In consequence the user very easily ends up moving the window a few pixels when he intended only to click on an icon.</p>
+
+<p>When the app has downloaded tweets or messages that the user has not read yet, it indicates this with a small glowing blue indicator beside the icon for the page or the button for the account if it is not the selected account. But the indicator for unread tweets on unselected accounts is very small, and does not stand out beside the bright background of the tweet list as it should. If you compare Twitter’s indicators with those in  Tweetie, you can see that the latter stand out much more visibly.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5341873427/"><img src="http://farm6.static.flickr.com/5086/5341873427_5a18eba70b_o.png" alt="Status indicators"/></a></div>
+
+<p>Nearly hidden at the bottom of the sidebar is a very small, faint icon of a bird (the Twitter logo), which displays a drop-down menu when clicked. By the icon’s placement and lack of prominence, I initially assumed it was for unimportant actions like displaying the About window. But instead it displays the menu for creating new tweets, one of the core features of the app. Due to its importance, this button should be larger and more prominent so that it is easier to point to with the mouse. It would also be much more obvious if it’s icon were a plus sign, an established convention meaning “New <em>thing</em>” instead of the company’s logo.</p>
+
+<p id="fn1" style="font-size: 80%;">1. This sentence originally read, “Twitter’s sidebar fails to employ a dead zone when distinguishing clicks from drags.” I have corrected after more careful testing showed it to be incorrect.</p>
+
+<p>To be continued…</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> January 10th, 2011 9:00am </span>
+                                                          <span class="tag">ui</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

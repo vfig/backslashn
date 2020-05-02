@@ -1,0 +1,95 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1></h1>
+                    <h1>User Interface Design in Twitter for Mac, part II</h1>
+
+<p>This is the second part of my detailed look at the user interface of Twitter for Mac. <a href="http://backslashn.com/post/2682092645/user-interface-design-in-twitter-for-mac-part-i">Part one is here</a>.</p>
+
+<h2>The timeline</h2>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5334295910/"><img src="http://farm6.static.flickr.com/5001/5334295910_97041f08e8_o.png" alt="Twitter’s main window"/></a></div>
+
+<p>The sidebar is a constant presence while navigating the app; except for composing tweets, all other everyday interactions are done through the pane on the right-hand side. Most of the time this will show the user’s timeline.</p>
+
+<p>The design of the timeline is very clean, almost minimal. A simple single-column table with a near-invisible scrollbar. Each row shows a tweet, the tweeter’s handle and avatar, and how long ago the tweet was posted; the only other addition is an indication if it is a retweet. The time and retweet labels are both set in a small, very faint, very light font. Even for a user with average eyesight such as myself they lie on the edge of illegibility; when the retweeting user’s handle has a lot of adjacent verticals such as “neilinglis”, the result is mostly an unreadable smudge.</p>
+
+<p>The text of the tweets is better. While set in a medium grey with tight leading, it remains very readable due to the clarity of Helvetica and the quality of type rendering under OS X. Links and twitter handles in the tweets are only set apart by being drawn in black<a href="#fn1" style="font-size:80%; vertical-align: super;">1</a>, a low-contrast difference from the remainder of the text. This decision favours the guiding principle of the app’s design—a focus on the tweets—over the more traditional blue for links. The value of this trade-off is arguable; however with the primary affordance reduced almost to invisibility, it is important that these links offer a secondary affordance to convey to the user that these remain clickable. Unfortunately they don’t; hovering over a link neither changes the colour of the link nor changes the mouse pointer into a hand, both well-established indications that an element is clickable. The only other visible indication that the links differ from normal text is the “http://” at the start of web links. It is quite feasible that a user might go a long time without realising that the twitter handles within tweets can also be clicked.</p>
+
+<h2>Tweet actions</h2>
+
+<p>When the mouse pointer hovers over a row, the time label is replaced with icon buttons to retweet, favourite, reply, or (if applicable) view the conversation the tweet is a part of. Three of these can be seen in the picture above, and all four in that below. The icons used for the first three of these buttons are well chosen: the ‘retweet’ icon replicates that used on the Twitter web site; the ‘favourite’ star and ‘reply’ arrow are both conventionally used with those meanings. The ‘view conversation’ button’s icon, a speech bubble, is reasonable on its own, but in the context of the app might be confusing, as a larger version of the same icon is used in the sidebar to mean “timeline”.</p>
+
+<p>Unlike most elements in the app, these buttons respond to being hovered. However the response is very strange. While the icons initially appear in a medium grey, hovering over any one of them not only leaves it unchanged—calling into question if it can after all be clicked—but fades the other icons to a light grey—which suggests to the user that they are disabled and unclickable. This is a bizarre decision.</p>
+
+<p>When the row is hovered, these buttons do not appear or disappear instantly, but use a short fade animation. If the mouse is moving slowly, this animation draws a little more attention to the change than if it was instantaneous, so that the user will be aware of these new elements. But the timing as the buttons fade out and the date fades back in is a little off. This is especially noticeable as the mouse moves rapidly over rows, as for example when mousing to the topmost row. The buttons disappear almost instantly, but the date fades in more slowly, leaving a short period in which the space is blank. This is perceptible as unwanted and distracting flicker that follows the mouse pointer’s vertical motion.</p>
+
+<h2>Context menu</h2>
+
+<p>Right-clicking on a tweet displays the following context menu:</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5333680925/"><img src="http://farm6.static.flickr.com/5249/5333680925_ecdbd5211b_o.png" width="433" height="478" alt="Tweet context menu"/></a></div>
+
+<p>Half the items in this menu are commonly performed actions, and clearly labelled, such as “Reply…”, “Copy Tweet”, and “View on Twitter.com”. The first three of these menu items sensibly replicate three of the four buttons described above; the fourth button is also replicated in this menu, but where the button is titled “View conversation”, the corresponding menu item here is title “In reply to @dannygreg…”. This is a poor choice of words because it does not describe the action that the app performs when this item is selected, whereas “View conversation” is a simple and clear description.</p>
+
+<p>The items in the final two sections are an interesting inclusion. The first four relate to the content of the tweet, repeating the hashtags and user handles referred to in the tweet (and will also repeat any links in the tweet). But they are poorly labelled, lacking any words to indicate what action selecting them will perform. Select the hashtag performs a search for that hashtag, and selecting one of the handles will show the list of that user’s recent tweets. Better labels would have been “Search ‘#shudder’” and “@dannygreg’s tweets” for example.</p>
+
+<p>The final item is always the handle of the tweet’s author. This suffers the same naming problem as the items above, and like the other handles selecting it displays the author’s recent tweets. However much higher up in the menu is another menu item, “User Details” which also displays the author’s recent tweets—although its name suggests it would display the author’s profile instead.</p>
+
+<p>Despite the naming, the inclusion of these two sections of items is a good choice, despite duplicating the links within the tweets; having the app’s actions available in a standard menu increases the discoverability and accessibility of the actions.</p>
+
+<h2>Scroll bar</h2>
+
+<p>The right-hand side of the tweet list contains a custom scrollbar. This is much narrower than the standard OS X scrollbar, and lacks its bright blue scroll handle, a visible track which the handle runs in, and the up/down buttons that normally accompany the scroll bar. This custom scrollbar mimics the appearance of the scroll indicator in iOS, but unlike it is interactive. The small handle can be dragged up and down to scroll, and clicking on the edge of the window above or below it will scroll up or down a whole page.</p>
+
+<p>Standard scrollbars in OS X when clicked above or below the handle will similarly scroll up or down a page, but they also support an alternate mode: when clicked with the Option (Alt) key pressed, they scroll immediately to the corresponding position in the list or document. In addition OS X provides a setting in the System Preferences to swap these behaviours, so the immediate scrolling occurs with a bare click, and the page scrolling when Option is pressed. Twitter for Mac does not support the immediate scrolling at all: clicking or Option-clicking in its scroll bar always scrolls a whole page, regardless of the setting in System Preferences.</p>
+
+<p>The scroll handle seen above is at its smallest height. When the app is displaying few tweets as will occur shortly after launch, the handle is larger and makes an easier target; but after running for a while, the influx of new tweets will extend the list and cause the handle to shrink proportionally. In practice this means that the handle will be at this minimum size most of the time.</p>
+
+<p>So the scroll handle is an exceptionally small target. Making this worse is that the width of the handle that detects clicks is narrower than the invisible scroll track. If a click misses the handle by one or two pixels on either side, the click is picked up by the scroll track instead, and interpreted as a command to scroll a whole page up or down. While this is clearly a bug and not a design decision, together with the lack of Option-click support it demonstrates the level of detail that needs to be considered when creating custom UI to replace standard UI.</p>
+
+<h2>Resize handle</h2>
+
+<p>Little needs to be said regarding the resize handle in the lower-right corner. Despite its faintness and unconventional appearance, its shape and position are sufficient to convey its purpose and use in resizing the window.</p>
+
+<h2>Writing tweets</h2>
+
+<p>Writing a tweet is done in a separate, small popup window. This window is also designed to be minimal. It contains the user’s avatar, a text field for writing the text; a Tweet button to post it and a Cancel button to discard it; and a small counter in light grey to indicate how many letters remain before the 140 character limit is reached, that turns orange and shows a negative number if that limit is exceeded.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5333681303/"><img src="http://farm6.static.flickr.com/5281/5333681303_1e21c1e19a_o.png" width="353" height="160" alt="The compose window"/></a></div>
+
+<p>Allowing the tweet to exceed the character limit while it is being composed is good; it gives the user the freedom to write whatever they wish and edit it down to size. In addition, Twitter for Mac will automatically shorten any links typed or pasted into the tweet; these are shown in full while composing, but the character counter accounts for the shortened version.</p>
+
+<p>Moving this window is, like the main window, done by dragging the black bar, located here along the bottom rather than the side. Unlike the main window, which can be moved by dragging anywhere including the buttons, here the window only moves if dragged between the buttons. This is once again nonstandard and hidden behaviour, but is less problematic here: the user has less reason to move the compose window, as it opens conveniently located beside the main window, and it is generally used only for a short time while writing a tweet. In Tweetie, the compose window had a standard title bar with traffic lights, and some users would compose draft tweets and minimise them until they were ready to post them, but the lack of traffic light buttons in Twitter’s compose window renders this impossible.</p>
+
+<p>The avatar indicates which account the tweet will be posted from. If the user has multiple accounts, this is important to know. This avatar also contains a hidden shortcut: clicking it displays a menu allowing the user to change the account they will post from. Hidden UI like this is problematic if it is the only way to access a feature, but this one is fine as it just provides a convenient shortcut; the user could instead copy the text, select the other account in the main window, and paste the text into a new compose window.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5334296574/" title="Twitter: compose dropdown by adurdin, on Flickr"><img src="http://farm6.static.flickr.com/5289/5334296574_e1f51af6d7_o.png" width="353" height="184" alt="The account dropdown"/></a></div>
+
+<p>The compose window shows a great piece of design when replying to another tweet. Instead of appearing beside the main window near the top, the compose window opens partially overlapping it, at the same height as the tweet that the user is replying to. And the window gains a small triangular arrowhead pointing back to that tweet. This reinforces the “replying” concept, and makes it easy for the user to refer to the original tweet while writing their reply.</p>
+
+<div style="text-align: center;"><a href="http://www.flickr.com/photos/adurdin/5333680787/"><img src="http://farm6.static.flickr.com/5168/5333680787_5239fdc7f6_o.png" width="747" height="372" alt="Composing a reply"/></a></div>
+
+<p>To be continued…</p>
+
+<p id="fn1" style="font-size: 80%;">1. Links appear blue in most of my screenshots, as I used the app’s hidden preferences to alter the link colour for greater visibility.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> January 14th, 2011 9:07am </span>
+                                                          <span class="tag">ui</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

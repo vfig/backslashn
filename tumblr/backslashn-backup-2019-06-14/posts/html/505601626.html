@@ -1,0 +1,118 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Profiling execution with the Django Debug Toolbar</h1>
+                    <p>Rob Hudson’s <a href="http://github.com/robhudson/django-debug-toolbar">Django Debug Toolbar</a> is a great little app that adds a sidebar to every page of your development site, giving you details of timing, settings, SQL statements issued, and a whole lot more.  Also, it&rsquo;s really easy to add your own bits to it.</p>
+
+<p>I had a view that was performing abysmally with some data sets, so I decided I needed to profile it.  With a few minutes work, I was able to put together a really simple plugin for the toolbar, that uses Python’s “hotshot” profiler.  Here&rsquo;s a picture of it in action.</p>
+
+<p><a href="http://www.flickr.com/photos/adurdin/4502063191/"><img src="http://farm3.static.flickr.com/2484/4502063191_6374a97e15_b.jpg" width="1024" height="193" alt="Profiling" style="margin:0 -150px"/></a></p>
+
+<p>And here’s the code. Stick this on your PYTHONPATH in <code>debug_profiling.py</code>, and add <code>'debug_profiling.ProfilingPanel',</code> to your <code>DEBUG_TOOLBAR_PANELS</code> setting.</p>
+
+<hr><pre><code>import StringIO
+import hotshot
+import hotshot.stats
+import os
+import tempfile
+import traceback
+from django.conf import settings
+from django.template import Template, Context
+from debug_toolbar.panels import DebugPanel
+
+class ProfilingPanel(DebugPanel):
+    """
+    Panel that runs the hotshot profiler during the request.
+    """
+
+    name = 'Profiling'
+    has_content = True
+
+    def __init__(self, *args, **kwargs):
+        super(ProfilingPanel, self).__init__(*args, **kwargs)
+        self.formatted_stats = ''
+        self.stats = None
+
+    def nav_title(self):
+        """Title showing in toolbar"""
+        return 'Profiling'
+
+    def nav_subtitle(self):
+        """Subtitle showing until title in toolbar"""
+        if self.stats:
+            return "%d function calls in %.3f CPU seconds" % (self.stats.total_calls, self.stats.total_tt)
+        else:
+            return "self.stats evaluates to False"
+
+    def title(self):
+        """Title showing in panel"""
+        return 'Profiling'
+
+    def url(self):
+        return ''
+
+    def content(self):
+        if self.stats and not self.formatted_stats:
+            try:
+                buffer = StringIO.StringIO()
+                self.stats.stream = buffer
+                self.stats.sort_stats('time', 'calls')
+                self.stats.print_stats(100)
+                self.formatted_stats = buffer.getvalue()
+            except:
+                print "Error getting hotshot stats:"
+                traceback.print_exc()
+
+        template = Template("""&lt;code&gt;{{ formatted_stats }}&lt;/code&gt;""")
+        context = Context()
+        context.update(self.context)
+        context.update({
+            'formatted_stats': self.formatted_stats,
+        })
+        return template.render(context)
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        if request.path.startswith(settings.ADMIN_MEDIA_PREFIX) or request.path.startswith('/__debug__/'):
+            return None
+
+        # Add a timestamp to the profile output when the callable is actually called.
+        handle, filename = tempfile.mkstemp(prefix='profiling')
+        os.close(handle)
+        prof = hotshot.Profile(filename)
+        try:
+            try:
+                try:
+                    result = prof.runcall(view_func, *((request,) + view_args), **view_kwargs)
+                finally:
+                    prof.close()
+            except:
+                raise
+            else:
+                self.stats = hotshot.stats.load(filename)
+                return result
+        finally:
+            os.unlink(filename)
+</code></pre>
+
+<hr>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> April 8th, 2010 1:36pm </span>
+                                                          <span class="tag">django</span>
+                                          <span class="tag">code</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

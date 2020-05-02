@@ -1,0 +1,72 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Sorting winners from losers</h1>
+                    <p>(This is a cross-post from <a href="http://www.nodraw.net/2012/02/sorting-winners-from-losers/">nodraw.net</a>)</p>
+
+<p>In my TF2 king of the hill map <a href="http://forums.tf2maps.net/showthread.php?t=11253">koth_skylab</a>, I wanted an ending sequence that would use a trigger to set the losing team on fire.</p>
+
+<p>The usual way of distinguishing between teams in a trigger is to use a <b>filter_activator_tfteam</b>. It has a <b>Team</b> property which can be set to the red team or blue team. Spawn room doors are a typical use of this filter, to allow only Red players into the Red spawn room, and only Blue players into the Blu spawn room.</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m02kmkt2R71qzlvtz.png" alt="Opening a spawn room door" width="509" height="209"/></p>
+
+<p>An alternative property, <b>Associated Control Point</b>, allows the filter to allow only playersfrom whichver team owns a particular control point. A trigger using this filter, connected to a door, would only open the door for Red players if Red had captured the control point, and similarly for Blue if Blue owned the point. If the control point was neutral, the door would open for nobody.</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m02knpjZeI1qzlvtz.png" alt="Opening a door for the control point holders" width="509" height="205"/></p>
+
+<h2>Finding the winners</h2>
+
+<p>In a king of the hill map, there is a single control point. Each team must try to hold the point for as long as possible. A team wins when they have held the control point cumulatively for a certain time; e.g. three minutes. Consequently, you can identify the winning team as the team that owns the control point when the round finishes. The winning team then gets ten seconds or so—the “humiliation period”—in which to slaughter the losers.</p>
+
+<p>When the Red team wins a round, the <b>tf_gamerules</b> entity sends the <b>OnWonByTeam1</b> output; when Blue wins, it sends the <b>OnWonByTeam2</b> output. If you have a trigger, filtered by the control point, that is <em>initially disabled</em>, and then enable it when either team wins, only the winning players will activate the trigger.</p>
+
+<p>I don’t really want to set the winners on fire—it would be a strange reward for winning—but I’ll add the logic here so you can see how it works. When the trigger gets an <b>OnStartTouch</b> input, it sends the <b>IgnitePlayer</b> output to <b>!activator</b>, which is the special identifier for “the entity that sent the input”, which in this case will be any player matching the filter. Hammer may not recognise these options, and will display them in red, but they will work just fine in the game.</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m02kohPZco1qzlvtz.png" alt="Setting the winning team on fire" width="509" height="298"/></p>
+
+<h2>Finding the losers?</h2>
+
+<p>Finding the losers should be easy. The third property on <b>filter_activator_tfteam</b> is <b>Filter Mode</b>. Set this to <b>Disallow</b>, and instead of allowing the matching team to activate the trigger, the filter will disallow them, and allow every other player to activate it. The team-filtered door in the second example above would open for both teams when nobody owned the point, for the Red team when Blue owned the point, and for the Blue team when Red owned the point. For pyromaniacs, the trigger shown below will set the entire losing team in the trigger area on fire.</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m02kp3rN031qzlvtz.png" alt="Setting the losing team on fire - with a bug"/></p>
+
+<p>However, there is a catch. If you enable this trigger during the round, it will work exactly as expected: the team that owns the point will be unaffected, and the team that doesn’t own it will burn. But if the trigger is enabled in the humiliation period after the round ends, <em>both teams</em> catch fire.</p>
+
+<p>It turns out that for the duration of the humiliation period, all team-based filters will always match the winning team. This is so that the winning Blu team can open the spawn room doors of the losing Red team (or vice-versa), to slaughter any cowardly players trying to hide in it—a worthy cause, indeed.</p>
+
+<p>But it causes me a little problem: although I can identify the winners, those-who-own-the-control-point, the inverted logic those-who-don’t-own-the-control-point that should identify the losers also matches the winners. It’s incredibly funny when both teams catch fire, but it’s not quite what I want.</p>
+
+<h2>All is not lost</h2>
+
+<p>I can still identify the losers, and only the losers, but those-who-don’t-own-the-control-point isn’t good enough because of the peculiar behaviour of <b>filter_activator_tfteam</b> after the round. What I need is to take the effect of the winning team filter (which still only matches the winners after the round ends) and invert its logic in some other way.</p>
+
+<p>There’s another filter entity in Source, <b>filter_multi</b>, which allows you to create complex filters by performing logical operations on several other filters that you specify. If you set its <b>Logic Type</b> property to AND, it will pass only if all the other filters pass; set it to OR, and it will pass if any one of the other filters pass. I don&rsquo;t need that capability here, but <b>filter_multi</b> also has a <b>Negate Outcome</b> property, which turns what would be a pass into a fail, and vice-versa.</p>
+
+<p>What this means is that the output of the <b>filter_multi</b> is not affected by team logic or humiliation periods at all, but only by the outputs of the other filters it specifies. So although the <b>Filter Mode</b> property of the <b>filter_activator_tfteam</b> turned out to be unsuitable, if I use a winning team filter and send its output through a negated <b>filter_multi</b>, it will match only the losing team.</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m02kpti1sb1qzlvtz.png" alt="Setting only the losing team on fire" width="509" height="370"/></p>
+
+<h2>Final notes</h2>
+
+<p>There’s one small issue remaining with our trigger and filter set up: the <b>filter_activator_tfteam</b> matches all players on the winning team, and so the <b>filter_multi</b>, being negated, matches everything else. Not just players, but all other entities. The fix for this is easy: just ensure the trigger flags are set to just <b>Clients</b>.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> February 27th, 2012 8:57pm </span>
+                                                          <span class="tag">source engine</span>
+                                          <span class="tag">tf2</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

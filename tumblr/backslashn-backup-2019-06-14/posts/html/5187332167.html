@@ -1,0 +1,40 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Python SMTP debugging server</h1>
+                    <blockquote>
+  <p>Note to self: this is how you start a python SMTP debugging server:</p>
+
+<pre><code>python -m smtpd -n -c DebuggingServer localhost:25
+</code></pre>
+</blockquote>
+
+<p>— <a href="http://parand.com/say/index.php/2009/05/29/python-smtp-debugging-server/">Parand Tony Darugar</a></p>
+
+<p>This debugging server will not deliver any messages sent via it, but will instead output them stdout, bracketed by the following lines:</p>
+
+<pre><code>---------- MESSAGE FOLLOWS ----------
+------------ END MESSAGE ------------
+</code></pre>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> May 4th, 2011 12:22pm </span>
+                                                          <span class="tag">python</span>
+                                          <span class="tag">code</span>
+                                          <span class="tag">tip</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

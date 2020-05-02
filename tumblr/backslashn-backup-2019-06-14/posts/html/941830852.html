@@ -1,0 +1,31 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Find text in MySQL database</h1>
+                    <p>I had an email address in an error log. It was coming from this MySQL database, <em>somewhere</em>, but I had no clue where.</p>
+
+<p>But it was easy to find out where:</p>
+
+<pre><code>mysqldump --opt --skip-extended-insert --complete-insert -uusername -p database_name | grep 'email@example.com'
+</code></pre>
+
+<p>This produces a single INSERT statement, showing me exactly where the email address is to be found: table, column, and primary key.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> August 12th, 2010 12:25pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

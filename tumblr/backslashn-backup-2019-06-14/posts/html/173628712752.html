@@ -1,0 +1,86 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Thief: Told</h1>
+                    <p>This follows on from <a href="http://backslashn.com/post/173587220222/thief-the-speech-project">my previous post</a> about the facial expression &amp; speech animation feature in Thief. The good news is I got it working this time!</p>
+
+<p>Before anything else, I&rsquo;d like to clarify a point from that post: the <code>face_process</code> command does nothing useful unless you first set the <code>face_path</code> property. For example this:</p>
+
+<pre><code>set face_path ./strings/
+face_process
+</code></pre>
+
+<p>Will write to &ldquo;./strings/facepos.str&rdquo; relative to the directory Dromed is in. The path is just stuck on the front of the file name, so make sure you have the trailing slash.</p>
+
+<p>So I followed through on my threat to apply a debugger to Dromed, and that had&hellip; mixed results. I installed Visual Studio, which turned out to be a waste of time since its interface now is quite confusing, and I couldn&rsquo;t figure out how to open a memory view and search for it. And I needed to do that because&ndash;since Dromed.exe doesn&rsquo;t have any symbols&ndash;I needed to locate some of the static strings relating to the feature, such as &ldquo;facepos.str&rdquo;, in order to find identify the actual functions I was interested in. The goal, of course, being to put some breakpoints on the various conditionals in those functions to see which of them was responsible for the thing not actually working as expected.</p>
+
+<p>So with Visual Studio out of the question, I then decided to try r2 (radare2). Since its focus is the disassembly of undocumented binaries, it&rsquo;s got much better tools for searching. But it&rsquo;s a command line only thing, which is okay, but means doing a bunch more reading in order to learn. But I successfully identified all the interesting functions from face.cpp in it, and so came up with a list of addresses for breakpoints. So then I stuck breakpoints on those addresses and ran Dromed. Well, tried to. For whatever reason, I couldn&rsquo;t get Dromed to run with r2 attached. Time to turn to a new debugger!</p>
+
+<p>This time around it was the venerable Windbg. I fired it up, set up the breakpoints, launched Dromed, and&hellip; nothing. Went between game mode and edit mode a few times. Changed the Face Textures and Face State properties around a bit. The breakpoints just weren&rsquo;t ever being hit. So then I dug through the disassembly a bit more to find the callers of the face functions, so I could put breakpoints further up. So the MeshTex functions got breakpoints too, and those weren&rsquo;t being hit either! Wtf.</p>
+
+<p>So as I was scratching my head over this, I took a closer look at the <code>MeshTexPrerender()</code> function that calls <code>FacePrerender()</code>:</p>
+
+<pre><code>void MeshTexPrerender(ObjID Obj, mms_model *pModel)
+{
+   sMeshTexRemap *pRemap;
+
+   // Does this object have our special property?
+   if (!g_pMeshTexProperty-&gt;Get(Obj, &amp;pRemap)) {
+      g_pCurrentModel = 0;
+      return;
+   }
+
+   ...
+
+   FacePrerender(Obj, pModel);
+}
+</code></pre>
+
+<p>Yeah. Look at that if there. The MeshTexPrerender function exits early if its corresponding property isn&rsquo;t present. And so in that case the face stuff never gets called. This is it, I thought, all I need to do is bung the MeshTex property onto my guinea pig guard, and it&rsquo;ll work.</p>
+
+<p>Well, it didn&rsquo;t.</p>
+
+<p>I&rsquo;d never noticed the MeshTex property (that&rsquo;s Renderer &gt; Mesh Textures to you) before, so I did a quick google to see if anyone had discussed it before, and the very first thing I found was the wiki page for it saying: &ldquo;Not in Thief Gold&rdquo;.</p>
+
+<p>Aha.</p>
+
+<p>Ahaha.</p>
+
+<p>Ahahahahahahaaa.</p>
+
+<p>So all this time I&rsquo;d been chasing down this feature, thinking it had been in The Dark Project and cut before release. But no: it appears to have been a new feature for Thief 2. But I&rsquo;d been using the Gold variant of NewDark, which&ndash;although it has the code in there, since NewDark is based off the Thief 2 codebase&ndash;doesn&rsquo;t support the new properties from Thief 2 in game. Even though Dromed will happily let you throw them around.</p>
+
+<p>So this was the second reason I&rsquo;d seen nothing happening at all. So I quickly set up a Thief 2 NewDark environment with Dromed and all that, and then created a new test mission. I added the Sound &gt; Face Motions property to the guard idle schema. Then I added a guard. Then quickly scribbled a bunch of face variations onto the guard texture and saved them into mesh/txt16. Then added the face textures property and set up the replacements. And finally, stuck the Renderer &gt; Mesh Textures cherry on top of the layer cake of prerequisites. With trepidation I pressed Alt+G.</p>
+
+<p>The moment I entered game mode, the guard coughed.</p>
+
+<p>AND HIS MOUTH ANIMATED ALONG WITH THE SOUND.</p>
+
+<p>Mine just hung open.</p>
+
+<p>Relief and surprise and joy mixed together. So the feature does work after all! It just needed Thief 2, and this extra property. I took a much-needed break for a cup of tea, and tweeted:</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">I have cracked the case of the mouth animations in Thief. Stay tuned for a demo coming soon…</p>— Andy Durdin (@adurdin) <a href="https://twitter.com/adurdin/status/992923434198949888">May 6, 2018</a></blockquote>
+
+<p>It was finished. All that was needed now was to make a demo to show it off&hellip;</p>
+
+<p><strong>Update:</strong> <a href="http://backslashn.com/post/173632242812/thief-ii-the-vocal-age">read more in part 3</a></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> May 6th, 2018 6:38am </span>
+                                </div>
+            </body>
+        </html>
+
+        

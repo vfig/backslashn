@@ -1,0 +1,73 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Thief: The Speech Project</h1>
+                    <p>While working on my upcoming Thief mission, I noticed an intriguing property in Dromed: Renderer &gt; Face Textures</p>
+
+<figure data-orig-height="181" data-orig-width="265" data-orig-src="https://i.imgur.com/fOkSmkm.png"><img src="https://66.media.tumblr.com/9a4e56c99345197ff874fbe6a2e0004b/tumblr_inline_p884f0TsPx1qzlvtz_540.png" data-orig-height="181" data-orig-width="265" data-orig-src="https://i.imgur.com/fOkSmkm.png"/></figure><p>Smiling, wincing, and stunned faces? I had my surprised face on at any rate. Thief never changed NPC&rsquo;s faces, did it? If I added this property to an object, the game crashed. Ah, obviously this is dead code relating to a feature cut long before the game shipped.</p>
+
+<p>Things got more interesting though: when I added this property to an object, it also dropped in this related state property: Renderer &gt; Face State</p>
+
+<figure data-orig-height="147" data-orig-width="265" data-orig-src="https://i.imgur.com/g7P0dvI.png"><img src="https://66.media.tumblr.com/470d08c9021b926fed3f808f213f0032/tumblr_inline_p884f0Juen1qzlvtz_540.png" data-orig-height="147" data-orig-width="265" data-orig-src="https://i.imgur.com/g7P0dvI.png"/></figure><p>What is this &ldquo;talking&rdquo; bit about? Well this made me remember an oddity in the list of Dromed commands that I&rsquo;d half noticed earlier, but not really paid attention to:</p>
+
+<pre><code>face_process        :  find textures to match speech samples.
+</code></pre>
+
+<p>&hellip;textures to match speech samples. Does this mean Thief at one point had&ndash;not just NPC faces changing to match their emotional state, but also animated mouths when they talked? That&rsquo;d be a big deal. Valve had been making a big deal of their feature in Half-Life that animated an NPC&rsquo;s mouth in real time to match their speech. Huh. I did a little more poking around in Dromed and found another property that seemed related: Sound &gt; Face Motions</p>
+
+<figure data-orig-height="89" data-orig-width="265" data-orig-src="https://i.imgur.com/Q8NCb1V.png"><img src="https://66.media.tumblr.com/5f8dd8ca262264f1adce6a535fa072ea/tumblr_inline_p884f1abTJ1qzlvtz_540.png" data-orig-height="89" data-orig-width="265" data-orig-src="https://i.imgur.com/Q8NCb1V.png"/></figure><p>I was well and truly interested now, and decided to do some digging. First point of call was the Thief 2 source code, and it didn&rsquo;t take long to find the corresponding code:</p>
+
+<figure class="tmblr-full" data-orig-height="165" data-orig-width="506" data-orig-src="https://i.imgur.com/p2hz6ck.png"><img src="https://66.media.tumblr.com/6a3d17e48e066b3a229cf0f468800b73/tumblr_inline_p884f3AHHa1qzlvtz_540.png" data-orig-height="165" data-orig-width="506" data-orig-src="https://i.imgur.com/p2hz6ck.png"/></figure><p>Having poked through the face code and the rendering code a little, it does look as though all the code for this feature remained in the game. Having read the code a little more carefully, and done some tests in Dromed, here&rsquo;s what I&rsquo;ve found:</p>
+
+<p>The <code>face_process</code> command in Dromed will generate a file <code>facepos.str</code> with animation frames for all speech samples whose schemas have the Sound &gt; Face Motions property turned on. Here&rsquo;s a small sample I generated with it, from a hammerite muttering:</p>
+
+<pre><code>hm1a0mu1:"14444313441431111144314441445415533444454554443144440110000"
+hm1a0mu2:"033111011111111111113114411444444441144414411141110100455555354441545431144444444541111145554443444441414543334311411114444113103431111100000000"
+hm1a0mu3:"0155444110011111111111244411410111144444112421111011010000410100000011121112541414211111111044411114414222124411111141214211000214112100004104422210141111210441210000000"
+</code></pre>
+
+<p>Each of these strings is a sequence of frames for a 16-frame-per-second facial animation for the sample in question. Each digit relates to one of the following mouth positions:</p>
+
+<pre><code>0: neutral
+1: small oh
+2: small ee
+3: big oh
+4: big ee
+5: shout
+</code></pre>
+
+<p>I wanted to see how well these generated frames corresponded to the speech, so here&rsquo;s <code>hm1a0mu3</code> alongside a set of simple faces that I drew and animated with a bit of javascript:</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/7BqYCRsuXPY" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<p>I don&rsquo;t know about you, but having made that animation, I was now really keen to see if I could get this working in the game somehow. Now, I haven&rsquo;t got it working at all yet, but I have got as far as having it not crash when I use the Renderer &gt; Face Textures property. Here&rsquo;s how it works:</p>
+
+<p>Each of the Neutral/Smile/Wince/Surprise/Stunned textures should be the prefix of a set of textures in the mesh/txt and mesh/txt16 folders for each of these visages (to use the term from the source code). Let&rsquo;s say I&rsquo;d put in <code>guardneut</code> for the neutral visage. Now if this visage won&rsquo;t support mouth animations, then I only need to create the <code>guardneut1.gif</code> texture for this visage. If it does support animations, then I also need <code>guardneut2.gif</code> and so on up to <code>guardneut6.gif</code>. Here the digits 1-6 correspond to neutral, small oh, smalle ee, big oh, big ee, and shout, respectively. Note that while the frames in <code>facepos.str</code> start at zero, the texture names start at one, presumably to make them more artist-friendly. Strange that the programmers didn&rsquo;t also do the same for the page numbering in book files:</p>
+
+<figure class="tmblr-full" data-orig-height="531" data-orig-width="595" data-orig-src="https://i.imgur.com/vRpjtZV.jpg"><img src="https://66.media.tumblr.com/44ce2167d793dd0b9cd3ea8ce3dd3df6/tumblr_inline_p884f36Foi1qzlvtz_540.jpg" data-orig-height="531" data-orig-width="595" data-orig-src="https://i.imgur.com/vRpjtZV.jpg"/></figure><p>But anyway, once I had the numbered textures in place, and set the visage names to the appropriate prefixes, the game no longer crashed when the guard starting talking. It didn&rsquo;t swap out the texture at all, but it was clearly doing something.</p>
+
+<p>But that&rsquo;s as far as I&rsquo;ve got just now. I haven&rsquo;t got a firm handle on what the &ldquo;texture to replace&rdquo; field should contain, and how it corresponds to the texture name baked into the model file. I think I&rsquo;m going to need to use a debugger for the next bit, to break when it&rsquo;s checking the materials to replace so I can really see what&rsquo;s going on. So expect an update sometime after I do that.</p>
+
+<p><strong>Update:</strong> <a href="http://backslashn.com/post/173628712752/thief-told">read more in part 2</a> and <a href="http://backslashn.com/post/173632242812/thief-ii-the-vocal-age">part 3</a></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> May 4th, 2018 10:42pm </span>
+                                                          <span class="tag">thief</span>
+                                          <span class="tag">thedarkproject</span>
+                                          <span class="tag">sourcecodespelunking</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

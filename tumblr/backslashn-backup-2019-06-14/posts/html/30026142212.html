@@ -1,0 +1,54 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>From TextMate to Sublime Text 2</h1>
+                    <p>In TextMate, I have a custom command for html contexts that inserts a tag around the selection. It does three things:</p>
+
+<p><strong>Inline</strong></p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m97alcxWhs1qzlvtz.png" alt=""/></p>
+
+<p>If I select a sequence of text without any newlines, hit my shortcut key, and type <code>em</code>, I get an inline snippet with the start tag and matching end tag:</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m97anugzwX1qzlvtz.png" alt=""/></p>
+
+<p><strong>Block</strong></p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m97aobRFpv1qzlvtz.png" alt=""/></p>
+
+<p>But if I had selected some text with newlines, the same command will instead put the tags on preceding and subsequent lines at the same indent level, and indent the contents one level deeper:</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m97aqp6rAi1qzlvtz.png" alt=""/></p>
+
+<p><strong>Attributes</strong></p>
+
+<p>In both cases, immediately after invoking the command, the selection is set to the starting tag name, and whatever I type there is mirrored to the end tag—but not including whitespace or anything after it. So if I hit the shortcut key, and type <code>p class='example'</code>, I get sensible results:</p>
+
+<p><img src="https://66.media.tumblr.com/tumblr_m97avt4pZE1qzlvtz.png" alt=""/></p>
+
+<hr><p>In TextMate, this is done with a custom Python script that examines the selection, and outputs a snippet. The snippet is dynamically generated so that it can contain the necessary line breaks and indentation already. It is then the snippet that handles the mirroring of the start tag to the end tag, with a regex substitution applied to omit the whitespace and any attributes after it.</p>
+
+<p>This command has been invaluable to me when editing HTML (which I do a lot), but I have been unable to figure out how to write a similar command within Sublime Text 2. Multiple selections would seem to be obvious for mirroring the start tag content to the end tag, but without the crucial omission of attributes. So for now I have the inconvenient situation of using Sublime Text 2 for editing most files, but opening up TextMate whenever I’m working with HTML.</p>
+
+<p>If you’re a Sublime Text 2 guru, do you know how this could be done in it?</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> August 23rd, 2012 10:19am </span>
+                                                          <span class="tag">textmate</span>
+                                          <span class="tag">sublime text 2</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

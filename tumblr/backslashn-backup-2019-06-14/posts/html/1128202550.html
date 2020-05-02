@@ -1,0 +1,33 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>eval() is always more evil than you think.</h1>
+                    <p><a href="http://twitter.com/diveintomark/status/24596525034">Mark</a> <a href="http://twitter.com/diveintomark/status/24596569615">Pilgrim</a>:</p>
+
+<p>In Python 3.1,</p>
+
+<pre><code>''.__class__.__class__.__subclasses__(''.__class__.__class__)[0]._dump_registry.__globals__['__builtins__']['__import__']
+</code></pre>
+
+<p>gets you an import function that will work even within <code>eval(s, {"__builtins__":None}, {})</code>.</p>
+
+<p><strong>EVAL() IS ALWAYS MORE EVIL THAN YOU THINK.</strong></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> September 15th, 2010 10:29pm </span>
+                                </div>
+            </body>
+        </html>
+
+        

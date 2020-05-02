@@ -1,0 +1,88 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Colorblindness simulation in the Source engine</h1>
+                    <p>While making a Portal 2 map last month, Robert Yang asked:</p>
+
+<blockquote>
+  <p>Was choosing &ldquo;red&rdquo; a bad idea / horribly insensitive to colorblind people? Like, will they be able to distinguish the non-portalable metal plating from the stone walls? I don&rsquo;t want a BioShock 2 debacle on my hands.</p>
+</blockquote>
+
+<p>— <a href="http://www.blog.radiator.debacle.us/2011/06/question-for-colorblind-idea-of.html">Radiator Blog</a></p>
+
+<p>This gave me an idea. I knew there was <a href="http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf">research into simulating the effects of colourblindness</a>, and had come across applications that implemented the method from that paper: <a href="http://colororacle.cartography.ch/index.html">Color Oracle</a> for one. I also knew that the Source engine supported colour mapping. So why not combine the two, to simulate colourblindness in game?</p>
+
+<iframe width="560" height="349" src="http://www.youtube.com/embed/MNftD6vPrAk" frameborder="0" allowfullscreen></iframe>
+
+<h2>Putting the bits together</h2>
+
+<p>Colour mapping in the Source engine is done with the <a href="http://developer.valvesoftware.com/wiki/Color_correction"><code>color_correction</code></a> entity. You can start the game—Team Fortress 2 for example—in &ldquo;tools&rdquo; mode to create and save a colour map file. You then create a <code>color_correction</code> entity in your map within Hammer, and configure it to use your colour map file. But the tools for creating colour maps are fairly basic, and I needed more.</p>
+
+<p>So I wrote a short <a href="http://www.python.org/">Python</a> script to convert a colour map to a <code>.tga</code> image file, and vice-versa. I also set it up so it could generate an identity colour map file or image; that is, one in which every colour remains the same.</p>
+
+<p>There are three common forms of colourblindness:</p>
+
+<ul><li>Deuteranomaly/deuteranopia (red/green), which affects about 5% of men.</li>
+<li>Protanamoaly/protanopia (red/green), which affects about 2.5% of men.</li>
+<li>Tritanomaly/tritanopia (blue/yellow), which affects less than 1% of men
+and women.</li>
+</ul><p>The simulation that is done here is of the &ldquo;anopia&rdquo; forms, where one of the types of cones in the eye is missing or completely non-functional. The &ldquo;anomaly&rdquo; forms are less severe, but as I understand it, if your visual design is accessible to people with deuteranopia, it will be at least as good for people with deuteranomaly.</p>
+
+<p>To create the colour maps for these, instead of doing the maths described in the paper, I converted the identity colour map to an image and opened it in Photoshop. I then used Color Oracle to view the image with each simulation, took a screenshot of each, and saved them back to <code>.tga</code> files. Finally, I converted each of the <code>.tga</code> files back into colour maps to use in the game.</p>
+
+<h2>Results</h2>
+
+<p>The last step was to put the necessary entities into my map to turn on colour correction with each colour map in turn, and test it out in the game. Here is each colour map image, with a screenshot of how it appears in-game:</p>
+
+<h3>Identity (normal appearance)</h3>
+
+<p><img alt="Identity colour map" src="https://66.media.tumblr.com/tumblr_loefife8ir1qzlvtz.png" width="512" height="16"/></p>
+
+<p><img alt="Screenshot with no colour mapping" src="https://66.media.tumblr.com/tumblr_loefknMEzA1qzlvtz.jpg" width="512" height="288"/></p>
+
+<h3>Protanopia</h3>
+
+<p><img alt="Protanopia colour map" src="https://66.media.tumblr.com/tumblr_loefj0Hp5p1qzlvtz.png" width="512" height="16"/></p>
+
+<p><img alt="Screenshot with protanopia colour map" src="https://66.media.tumblr.com/tumblr_loefl5eQko1qzlvtz.jpg" width="512" height="288"/></p>
+
+<h3>Deuteranopia</h3>
+
+<p><img alt="Deuteranopia colour map" src="https://66.media.tumblr.com/tumblr_loefjhPXm21qzlvtz.png" width="512" height="16"/></p>
+
+<p><img alt="Screenshot with deuteranopia colour map" src="https://66.media.tumblr.com/tumblr_loefllzgke1qzlvtz.jpg" width="512" height="288"/></p>
+
+<h3>Tritanopia</h3>
+
+<p><img alt="Tritanopia colour map" src="https://66.media.tumblr.com/tumblr_loefjw4OGD1qzlvtz.png" width="512" height="16"/></p>
+
+<p><img alt="Screenshot with tritanopia colour map" src="https://66.media.tumblr.com/tumblr_loefm2MUAc1qzlvtz.jpg" width="512" height="288"/></p>
+
+<h2>Try it for yourself</h2>
+
+<p>I have posted the colour maps and the python script <a href="https://github.com/adurdin/source-colorblind">on GitHub</a>. I have also included a prefab of the colour correction entities, so you can easily drop them into any map you’re working on.</p>
+
+<ul><li><p><a href="https://github.com/adurdin/source-colorblind/zipball/master">Download (ZIP)</a></p></li>
+<li><p><a href="https://github.com/adurdin/source-colorblind/blob/master/README.md">Installation instructions</a></p></li>
+</ul><h2>One more thing</h2>
+
+<p>Because the script will convert any suitably-sized <code>.tga</code> to a colour map or vice versa, you are no longer limited to the tools Valve provides to create colour maps, but can use all the tools that Photoshop or any other image editor provides to adjust the colours in the image, then convert the result back to a color map for use in the game.</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> July 16th, 2011 9:55am </span>
+                                </div>
+            </body>
+        </html>
+
+        

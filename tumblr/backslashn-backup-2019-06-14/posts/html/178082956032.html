@@ -1,0 +1,70 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Loud Rooms</h1>
+                    <p>Have I talked about loud rooms? I don&rsquo;t think so. I&rsquo;m gonna talk about loud rooms.</p>
+
+<p>First for those of you who haven&rsquo;t played Thief, sound is super significant in the game.  You can hear enemies, and enemies can hear you.  In Thief, sound travels: across rooms, around corners and through doors (though muffled).</p>
+
+<p>Making noise, whether by throwing objects, using explosives, or even just your clanking footsteps on a noisy surface will get you discovered.  As such, being aware of the sounds you&rsquo;re making, and predicting the sounds you will make if you take certain paths or actions is a crucial skill for the player to master.</p>
+
+<p>In addition to the sounds made by the player and NPCs, there&rsquo;s ambient sounds too of course: water lapping, steam hissing, machinery clanking, and REALLY LOUD MACHINERY CLANKING.  That last one in particular makes it really hard for the player to hear enemy NPCs.</p>
+
+<p>But here&rsquo;s the thing: although Thief models sounds being attenuated by distance, (with a sound&rsquo;s path traced via a simplified spatial model), its model for AI&rsquo;s hearing only takes each sound&rsquo;s magnitude into account individually.  So an NPC hearing REALLY LOUD MACHINERY CLANKING (which naturally doesn&rsquo;t signify anything to them) and simultaneously hearing the player&rsquo;s footsteps tapping a little bit loud on a tile floor, can still hear those footsteps just as easily as if there was no other noise.  And so while it feels like a really loud noise going on should mask the player&rsquo;s own noise a bit, that unfortunately just doesn&rsquo;t happen.  Now the devs must have realised this sometime during or after Thief 1&rsquo;s development, because in Thief 2 there&rsquo;s a new feature to address it.  You can see where I&rsquo;m going with this:</p>
+
+<p>No, this feature didn&rsquo;t end up actually being used in the shipping game.</p>
+
+<p>Now everything from here comes from me reading the source code and (mis)understanding it, so there&rsquo;s probably a few mistakes, but I think the gist is clear:</p>
+
+<p>In Thief 2 there&rsquo;s a new property that can be added to room brushes, called &ldquo;Loud Room&rdquo;.  It seems clear to me from the name and its implementation that the intent was to have an approximation to sound-masking available to level designers, without making major AI changes.  Loud Room is a single float, presumably from 0.0 to 1.0.  The volume of sounds transmitted from this room to adjacent rooms are multiplied by this float.  This works in a similar way to how doors between rooms affects sound: each type of door has a similar float property that defines how much it blocks sound; and the volume of sounds is multiplied by (1.0 - blocking_factor) when a door is closed.</p>
+
+<p>So the way I interpret Loud Room to have been intended to use, is to set it to, say, 0.6 on a room with the REALLY LOUD CLANKING MACHINERY, which probably has metal floors too just for laughs.  Then the player&rsquo;s noisy footsteps on the floor in that room would sound 40% quieter to NPCs outwith the room, making the player harder to audibly detect. Sound masking! …right?</p>
+
+<p>The problem is, sound goes both ways. Although the effect seems about right when the player&rsquo;s in the loud room, it&rsquo;ll seem entirely wrong if the player is outwith the room listening to an NPC walking on that metal floor inside it.  Because all the sound from the room is attenuated, the player outwith the room will hear the NPC&rsquo;s footsteps as 40% quieter, and the REALLY LOUD MACHINE CLANKS will be 40% quieter too.  Which would be just weird.</p>
+
+<p>And that no doubt explains why they didn&rsquo;t use this feature in shipping levels: I&rsquo;m guessing they came up with this simple system (in terms of implementation: it&rsquo;s not much more than two lines of code), tried it out, then cut it when it didn&rsquo;t work right.</p>
+
+<hr><p>Now in all the levels that shipped with Thief 2, it turns out that there is actually a single room with this Loud Room property set on it. In the mission Framed, in the basement of the City Watch headquarters, is a &ldquo;machinery room&rdquo;. And it has the Loud Room property on it!  Which seems appropriate, since it is full of machinery. Though fairly quiet machinery as these things go.</p>
+
+<p>As it happens, the Loud Room value set on it is 1.0, which means the property isn&rsquo;t causing any attenuation of sounds anyway.</p>
+
+<p>And apart from that, this room is basically a dead end at the end of a hallway in the basement: there&rsquo;s never any NPCs just outside it to listen; there&rsquo;s no noisy floor surfaces in the room (it&rsquo;s all stone); so it&rsquo;s not even a situation where Loud Room would make much difference.</p>
+
+<p>(There is an NPC who will walk to this room and hang around inside it. But there&rsquo;s also no reason for the alternative interesting situation to arise either: where the player just outside the loud room makes noise that is masked for the NPC inside.)</p>
+
+<p>And that&rsquo;s the story of Loud Rooms.</p>
+
+<hr><p>Okay, I just had to do the test. Turns out my reading of the code was missing one thing: the &ldquo;loud room&rdquo; attenuation factor is also applied to sounds originating within the loud room that the player is hearing in the loud room too!  I suppose that would let you walk clangily around in a loud room that had a hostile NPC in it, with the NPC&rsquo;s hearing perception reduced accordingly.  But as a player it&rsquo;s very weird to hear your footsteps in the room before, but then they suddenly get <em>quieter</em> to you as you enter the loud room with the same floor!</p>
+
+<p>Here&rsquo;s my test:</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/fbUyhEKjk2Q" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>
+
+<p>The first room with marble floors is a normal room, as a control.  The green room in the middle has no room brush so that sound cannot propagate through it, just to isolate.  The second room with metal floors is the loud room, with an attenuation factor of 0.5.</p>
+
+<p>Notice how my footsteps get audibly quieter as I enter the loud room.  Note also how the machinery in the loud room, despite having the same volume settings, actually sounds quieter than that in the control.</p>
+
+<p>Because the loud room property is actually applied to sounds that stay within the room, <em>all</em> the sounds in the room are quieter!  Doing this test shows that the &ldquo;actually the sounds get quieter so the NPCs won&rsquo;t hear them so well&rdquo; approach to sound masking is pretty flawed.</p>
+
+<p>(The doors at the end attenuate the sound with a factor of 0.2 by the way. I just needed to shut that infernal noise up!)</p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> September 14th, 2018 7:44pm </span>
+                                                          <span class="tag">thief2</span>
+                                          <span class="tag">leveldesign</span>
+                                                    </div>
+            </body>
+        </html>
+
+        

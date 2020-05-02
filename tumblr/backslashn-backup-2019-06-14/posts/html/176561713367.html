@@ -1,0 +1,53 @@
+        <!DOCTYPE HTML>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <link rel="stylesheet" type="text/css" href="../style.css"/>
+            </head>
+            <body>
+                
+                
+                                    <h1>Lighting the Player in Thief</h1>
+                    <p>So I&rsquo;ve heard a couple people mentioning that Thief calculates how lit the player is by sampling the lightmap where the player is standing.</p>
+
+<p>But this sounded wrong to me. On numerous occasions I&rsquo;ve been standing in what looks like a shadow, yet been lit much more brightly than the ground would indicate—like this &ldquo;safe-ish&rdquo; example from <a href="https://www.blog.radiator.debacle.us/2012/07/thief-1s-assassins-and-environmental.html">Robert Yang&rsquo;s blog</a>:</p>
+
+<figure class="tmblr-full" data-orig-height="720" data-orig-width="1280" data-orig-src="https://i.imgur.com/klOBKnp.jpg"><img src="https://66.media.tumblr.com/fba14c7833cd2abf6eb8edc937e57986/tumblr_inline_pcx5mythUB1qzlvtz_540.jpg" alt="The player is surprised to be quite visible in a shadowed area" data-orig-height="720" data-orig-width="1280" data-orig-src="https://i.imgur.com/klOBKnp.jpg"/></figure><p>And thinking about the player moving through the Z axis: when climbing up a rope, for example, you can see the light gem change as you move in and out of view of lights around you. Sampling lightmaps doesn&rsquo;t work here either.</p>
+
+<p>If the player <em>does</em> stay grounded all the time, then sampling lightmaps is a pretty good way of determining visibility that is excellent for player feedback. But it seemed clear that Thief couldn&rsquo;t be doing that—or not only that.</p>
+
+<p>So, curious about how it actually calculates it, I dug into the Thief 2 source code again. Obviously things may have changed between Thief 1 and 2, but it seems unlikely on the face of it.</p>
+
+<p>So for starters: the light gem code determines which of the light gem models to display by looking up player&rsquo;s &ldquo;Visibility&rdquo; property to get the light level. So it must have already been calculated earlier this frame.</p>
+
+<figure class="tmblr-full" data-orig-height="140" data-orig-width="473" data-orig-src="https://i.imgur.com/XqGoaKi.png"><img src="https://66.media.tumblr.com/038baf5bca64fb0f927680719e5f05a5/tumblr_inline_pcx5myHXp41qzlvtz_540.png" alt="Visibility calculated by calling `AIGetVisibility(PlayerObject())`" data-orig-height="140" data-orig-width="473" data-orig-src="https://i.imgur.com/XqGoaKi.png"/></figure><p>Following the trail of breadcrumbs through the game, eventually I find the light level (ignoring other visibility modifiers like crouching, holding a weapon, moving and so on) being calculated by <code>compute_object_lighting()</code>.</p>
+
+<figure class="tmblr-full" data-orig-height="418" data-orig-width="435" data-orig-src="https://i.imgur.com/OhiYHuU.png"><img src="https://66.media.tumblr.com/fe6e3b5ff11db4e63fc4eb37aa15107e/tumblr_inline_pcx5mzqZ8n1qzlvtz_540.png" alt="Frame update code that calls `AIUpdateVisibility()`" data-orig-height="418" data-orig-width="435" data-orig-src="https://i.imgur.com/OhiYHuU.png"/></figure><figure class="tmblr-full" data-orig-height="383" data-orig-width="630" data-orig-src="https://i.imgur.com/ae0nC0x.png"><img src="https://66.media.tumblr.com/5bc389d9075a0f8ba3dd2ff3e4ad1482/tumblr_inline_pcx5n0JryR1qzlvtz_540.png" alt="`AIUpdateVisibility()` function calls `CalculateLightRating()`" data-orig-height="383" data-orig-width="630" data-orig-src="https://i.imgur.com/ae0nC0x.png"/></figure><figure class="tmblr-full" data-orig-height="319" data-orig-width="696" data-orig-src="https://i.imgur.com/N8zHb0P.png"><img src="https://66.media.tumblr.com/bc052db8909e0ee5f6bff4d04c98654b/tumblr_inline_pcx5n087oM1qzlvtz_540.png" alt="`CalculateLightRating()` function calls `AIGetObjectLighting()`" data-orig-height="319" data-orig-width="696" data-orig-src="https://i.imgur.com/N8zHb0P.png"/></figure><figure class="tmblr-full" data-orig-height="118" data-orig-width="335" data-orig-src="https://i.imgur.com/xGmc5rl.png"><img src="https://66.media.tumblr.com/b095200291d983be233ab7bd991aedf1/tumblr_inline_pcx5n0WAnU1qzlvtz_540.png" alt="And `AIGetObjectLighting()` just defers to `compute_object_lighting()`" data-orig-height="118" data-orig-width="335" data-orig-src="https://i.imgur.com/xGmc5rl.png"/></figure><p>So <code>compute_object_lighting()</code> seems fairly straightforward in principle: it just adds up the contributions from all the lights around. The bitfield and <code>inner_frac</code> stuff is a bit confusing though.</p>
+
+<figure class="tmblr-full" data-orig-height="769" data-orig-width="590" data-orig-src="https://i.imgur.com/0Biv32R.png"><img src="https://66.media.tumblr.com/399c58a43b2805b5578adc965d65f6b7/tumblr_inline_pcx5n1VVpV1qzlvtz_540.png" alt="The code for `compute_object_lighting()`" data-orig-height="769" data-orig-width="590" data-orig-src="https://i.imgur.com/0Biv32R.png"/></figure><p>Digging into <code>objGetShadows()</code> makes it clearer: there&rsquo;s a global cache with one entry for each object in the game, that keeps track of which BSP cell the object was last seen in, and a 96 bit field. Each bit there relates to one of the lights that touches that cell.</p>
+
+<figure class="tmblr-full" data-orig-height="592" data-orig-width="594" data-orig-src="https://i.imgur.com/Ls8JYX4.png"><img src="https://66.media.tumblr.com/d670019bba192d7e48a19d7d7f097a51/tumblr_inline_pcx5n1b5F31qzlvtz_540.png" alt="objGetShadows()` is looking up light indices from the current cell" data-orig-height="592" data-orig-width="594" data-orig-src="https://i.imgur.com/Ls8JYX4.png"/></figure><p>When the static lighting is computed for the level (in the editor), each cell stores the indices of every static light in the map that reaches it. Cells can be quite large, so this could be a lot of static lights. No more than 96 though, I guess?</p>
+
+<p>Then for each object in that cell, this shadow cache bitfield has each bit corresponding to one of those lights: 1 if the object is visible to that light, and 0 if not. The <code>location_sees_light()</code> call does raycasts to check if the object is visible to a light.</p>
+
+<figure class="tmblr-full" data-orig-height="343" data-orig-width="572" data-orig-src="https://i.imgur.com/M2ThRy5.png"><img src="https://66.media.tumblr.com/7456c17125a010d78742d3210e4da0b5/tumblr_inline_pcx5n1I55V1qzlvtz_540.png" alt="`location_sees_light()` raycasts through the BSP structure and then against objects" data-orig-height="343" data-orig-width="572" data-orig-src="https://i.imgur.com/M2ThRy5.png"/></figure><p>Since most objects don&rsquo;t move much, the cache avoids having to do the expensive raycasts very often. Since a map in Thief 2 (pre-NewDark) could have at most 4096 objects total, this cache is 64kB.</p>
+
+<p>Anyway, the conclusion of all that is: calculating the light falling on the player or any other object is done by iterating through the BSP cells&rsquo; array of lights — <code>WR_CELL(cell)-&amp;gt;light_indices</code> — and doesn&rsquo;t touch its lightmaps at all.</p>
+
+<p>This boring code spelunk brought to you by the letter V and the number 96.</p>
+
+<p><i>I previously <a href="https://twitter.com/adurdin/status/1001059856399380480">posted all this on twitter</a>, but twitter is bad for finding information again. So here&rsquo;s a more permanent home for the thread.</i></p>
+                
+                
+                
+                
+                
+                
+                                <div id="footer">
+                <span id="timestamp"> August 2nd, 2018 8:06pm </span>
+                                                          <span class="tag">thief</span>
+                                                    </div>
+            </body>
+        </html>
+
+        
