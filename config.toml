@@ -1,6 +1,6 @@
 baseURL = "https://backslashn.com/"
 languageCode = "en-gb"
-title = "\\n — @adurdin is thinking aloud"
+title = "\\n — @vfig is thinking aloud"
 theme = "temple"
 copyright = "<a rel='license' href='http://creativecommons.org/licenses/by-nc/4.0/'>CC BY-NC 4.0</a>."
 
@@ -35,9 +35,9 @@ category = "category"
 
 [author]
 name = "Andy Durdin"
-#github = "adurdin"
+#github = "vfig"
 email = "me@andy.durdin.net"
-twitter = "@adurdin"
+twitter = "@vfig"
 #medium = "mediumUsername"
 
 
