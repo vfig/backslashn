@@ -1,0 +1,17 @@
+<script>
+    /* Make all images clickable */
+    window.addEventListener('load', function() {
+        var imgs = document.querySelectorAll('img');
+        for (var i=0; i<imgs.length; ++i) {
+            var img = imgs[i];
+            var parent = img.parentNode;
+            var a = document.createElement('a');
+            a.style.display = 'block';
+            a.href = img.src;
+            a.target = '_blank';
+            a.title = img.alt;
+            parent.insertBefore(a, img);
+            a.appendChild(img);
+        }
+    });
+</script>
